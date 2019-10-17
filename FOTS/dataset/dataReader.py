@@ -13,13 +13,13 @@ import random
 
 import tensorflow as tf
 
-from data_util import GeneratorEnqueuer
+from FOTS.dataset.data_util import GeneratorEnqueuer
 
 tf.app.flags.DEFINE_string(
-    'training_data_path', 'dataFolder/textBox_Anno_trainIcdar/img', 'training dataset to use')
+    'training_data_path', '/dl_data/m-taketani/practice/FOTS/dataSet/img', 'training dataset to use')
 tf.app.flags.DEFINE_string(
-    'training_anno_path', 'dataFolder/textBox_Anno_trainIcdar/icdar', 'training dataset to use')
-tf.app.flags.DEFINE_string('vocb_path', 'dataFolder/textBox_Anno_trainIcdar/vocb_3.txt', 'vocb file path')
+    'training_anno_path', '/dl_data/m-taketani/practice/FOTS/dataSet//anno', 'training dataset to use')
+tf.app.flags.DEFINE_string('vocb_path', '/dl_data/m-taketani/practice/FOTS/dataSet/vocab/ch4_training_vocabulary.txt', 'vocb file path')
 
 tf.app.flags.DEFINE_bool('avoid_vertText', True, 'avoid_vertText')
 tf.app.flags.DEFINE_bool('allow_unknown_char', True, 'allow unknown char')
@@ -36,7 +36,7 @@ tf.app.flags.DEFINE_integer('max_text_size', 800,
 tf.app.flags.DEFINE_integer('min_text_size', 6,
                             'if the text size is smaller than this, we ignore it during training')
 
-tf.app.flags.DEFINE_integer('crop_aspect_ratio', 0.2,
+tf.app.flags.DEFINE_float('crop_aspect_ratio', 0.2,
                             'if the text size is smaller than this, we ignore it during training')
 tf.app.flags.DEFINE_float('min_crop_side_ratio', 0.3,
                           'when doing random crop from input image, the'
@@ -48,7 +48,7 @@ tf.app.flags.DEFINE_string('geometry', 'RBOX',
 
 FLAGS = tf.app.flags.FLAGS
 # avoid a blank as key
-CLASSES = [i.strip('\n').strip('\r').decode("utf-8") for i in open(FLAGS.vocb_path).readlines() if len(i.replace(' ').strip('\n').strip('\r')) > 0]
+CLASSES = [i.strip('\n').strip('\r') for i in open(FLAGS.vocb_path).readlines() if len(i.replace(' ', '').strip('\n').strip('\r')) > 0]
 encode_maps={}
 decode_maps={}
 for i, char in enumerate(CLASSES):
@@ -60,7 +60,7 @@ if FLAGS.allow_unknown_char:
     encode_maps[' '] = len(CLASSES)
 
 NUM_CLASSES = len(decode_maps)
-
+print("NUM_CLASSES", NUM_CLASSES)
 def get_images():
     """
     获得path目录（文件）下的所有的文件序列，包括子目录

@@ -3,7 +3,7 @@ from tensorflow.contrib import slim
 
 tf.app.flags.DEFINE_integer('features_stride', 4, '')
 
-from nets import resnet_v1
+from FOTS.nets import resnet_v1
 
 
 FLAGS = tf.app.flags.FLAGS

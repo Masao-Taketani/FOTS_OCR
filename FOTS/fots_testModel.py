@@ -2,12 +2,14 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-import detector
-import recognizer
-import RoiRotate
-import sharedConv
-from icdar import NUM_CLASSES, restore_roiRotatePara, restore_rectangle, decode_maps
-import locality_aware_nms as nms_locality
+import FOTS.detector
+import FOTS.recognizer
+import FOTS.RoiRotate
+import FOTS.sharedConv
+from FOTS.dataset.dataReader import restore_roiRotatePara, restore_rectangle, decode_maps
+import FOTS.locality_aware_nms as nms_locality
+
+NUM_CLASSES = 2032
 
 tf.app.flags.DEFINE_integer('test_input_size', 224, '')
 tf.app.flags.DEFINE_integer('test_batch', 8, '')

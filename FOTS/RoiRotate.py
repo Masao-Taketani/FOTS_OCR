@@ -10,8 +10,8 @@ class RoiRotate(object):
 		self.features = features
 		self.features_stride = features_stride
 
-		self.max_RoiWidth = FLAGS.virtule_MaxRoiWidth / features_stride
-		self.fix_RoiHeight = FLAGS.virtule_RoiHeight / features_stride
+		self.max_RoiWidth = int(FLAGS.virtule_MaxRoiWidth / features_stride)
+		self.fix_RoiHeight = int(FLAGS.virtule_RoiHeight / features_stride)
 		self.ratio = float(self.fix_RoiHeight) / self.max_RoiWidth
 
 	def scanFunc(self, state, b_input):

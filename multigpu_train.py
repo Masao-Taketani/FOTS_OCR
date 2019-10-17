@@ -2,6 +2,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib import slim
+from FOTS import sharedConv
 
 tf.app.flags.DEFINE_integer('input_size', 224, '')
 tf.app.flags.DEFINE_integer('batch_size_per_gpu', 32, '')
@@ -10,7 +11,7 @@ tf.app.flags.DEFINE_float('learning_rate', 0.001, '')
 tf.app.flags.DEFINE_integer('max_steps', 100000, '')
 tf.app.flags.DEFINE_float('moving_average_decay', 0.997, '')
 tf.app.flags.DEFINE_string('train_gpu_list', '1', '')
-tf.app.flags.DEFINE_string('checkpoint_path', 'dataFolder/FOST_textOnPlate', '')
+tf.app.flags.DEFINE_string('checkpoint_path', '/dl_data/m-taketani/practice/FOTS/dataSet/ckpt', '')
 tf.app.flags.DEFINE_boolean('restore', False, 'whether to resotre from checkpoint')
 tf.app.flags.DEFINE_integer('save_checkpoint_steps', 1000, '')
 tf.app.flags.DEFINE_integer('save_summary_steps', 100, '')
@@ -108,14 +109,16 @@ def main(argv=None):
     if gpus:
         for i, gpu_id in enumerate(gpus):
             with tf.device('/device:GPU:%d' % gpu_id):
-                print 'device : /gpu:%d' % gpu_id
+                print('device : /gpu:%d' % gpu_id)
                 with tf.name_scope('model_%d' % gpu_id) as scope:
                     models.append(build_model(opt, reuse_variables, scope))
                     reuse_variables = True
     else:
         models.append(build_model(opt, reuse_variables))
 
-    tower_total_loss, tower_model_loss, tower_detector_loss, tower_recognizer_loss, tower_batch_norm_updates_op, tower_grads = zip(*models)[-6:]
+    #print("models:", models)
+
+    tower_total_loss, tower_model_loss, tower_detector_loss, tower_recognizer_loss, tower_batch_norm_updates_op, tower_grads = models[0][-6:]
 
     grads = average_gradients(tower_grads)
     batch_norm_updates_op = tf.group(*tower_batch_norm_updates_op)
