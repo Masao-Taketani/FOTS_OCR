@@ -45,7 +45,7 @@ def sparse_tuple_from_label(sequences):
 
 def average_gradients(tower_grads):
     average_grads = []
-    for grad_and_vars in zip(*tower_grads):
+    for grad_and_vars in zip(tower_grads):
         grads = []
         for g, _ in grad_and_vars:
             expanded_g = tf.expand_dims(g, 0)
@@ -116,12 +116,11 @@ def main(argv=None):
     else:
         models.append(build_model(opt, reuse_variables))
 
-    #print("models:", models)
-
     tower_total_loss, tower_model_loss, tower_detector_loss, tower_recognizer_loss, tower_batch_norm_updates_op, tower_grads = models[0][-6:]
 
     grads = average_gradients(tower_grads)
-    batch_norm_updates_op = tf.group(*tower_batch_norm_updates_op)
+    #print("###########tower_batch_norm_updates_op###########", tower_batch_norm_updates_op)
+    batch_norm_updates_op = tf.group(tower_batch_norm_updates_op)
     apply_gradient_op = opt.apply_gradients(grads, global_step=global_step)
 
     total_loss = tf.reduce_mean(tf.concat(tower_total_loss, 0))

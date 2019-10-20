@@ -2,10 +2,10 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-import FOTS.detector
-import FOTS.recognizer
-import FOTS.RoiRotate
-import FOTS.sharedConv
+from FOTS import detector
+from FOTS import recognizer
+from FOTS import RoiRotate
+from FOTS import sharedConv
 from FOTS.dataset.dataReader import restore_roiRotatePara, restore_rectangle, decode_maps
 import FOTS.locality_aware_nms as nms_locality
 
