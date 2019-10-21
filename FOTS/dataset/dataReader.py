@@ -16,15 +16,15 @@ import tensorflow as tf
 from FOTS.dataset.data_util import GeneratorEnqueuer
 
 tf.app.flags.DEFINE_string(
-    'training_data_path', '/dl_data/m-taketani/practice/FOTS/dataSet/img', 'training dataset to use')
+    'training_data_path', '/dl_data/m-taketani/practice/FOTS/dataSet/img/', 'training dataset to use')
 tf.app.flags.DEFINE_string(
-    'training_anno_path', '/dl_data/m-taketani/practice/FOTS/dataSet//anno', 'training dataset to use')
+    'training_anno_path', '/dl_data/m-taketani/practice/FOTS/dataSet/anno/', 'training dataset to use')
 tf.app.flags.DEFINE_string('vocb_path', '/dl_data/m-taketani/practice/FOTS/dataSet/vocab/ch4_training_vocabulary.txt', 'vocb file path')
 
 tf.app.flags.DEFINE_bool('avoid_vertText', True, 'avoid_vertText')
 tf.app.flags.DEFINE_bool('allow_unknown_char', True, 'allow unknown char')
 
-tf.app.flags.DEFINE_string('ext', 'icdar', '')
+tf.app.flags.DEFINE_string('ext', 'txt', '')
 
 tf.app.flags.DEFINE_integer('LABEL_LEN_UPPER', 16, '')
 tf.app.flags.DEFINE_integer('max_image_large_side', 1280,
@@ -91,9 +91,10 @@ def load_annoataion(p):
     text_tags = []
     if not os.path.exists(p):
         return np.array(text_polys, dtype=np.float32), np.array(text_tags, dtype=np.int32)
-    with open(p, 'r') as f:
+    with open(p, 'r', encoding="utf-8") as f:
         reader = csv.reader(f)
         for line in reader:
+            print("LINE:", line)
             label = line[-1].replace(' ')
             line = [i.strip('\ufeff').strip('\xef\xbb\xbf') for i in line]
 
@@ -809,11 +810,12 @@ def generate_rbox(im_size, polys, tags):
 
 def generator(input_size=224, batch_size=32,random_scale=np.array([0.5, 3.0]),vis=False):
     image_list = np.array(get_images())
+    print("image_list1", image_list.shape)
     anno_path = FLAGS.training_anno_path
     print('anno path {}'.format(anno_path))
     image_list = np.array([im_fn for im_fn in image_list if os.path.exists(os.path.join(
         anno_path, '%s.%s' % (os.path.basename(im_fn).rpartition('.')[0], FLAGS.ext)))])
-
+    print("image_list2", image_list.shape)
     print('{} training images in {}'.format(
         image_list.shape[0], FLAGS.training_data_path))
     index = np.arange(0, image_list.shape[0])
