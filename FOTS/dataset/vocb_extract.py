@@ -19,7 +19,7 @@ def GetAllFiles(path):
             listFiles.extend([os.path.join(t[0], fileName) for fileName in t[2]])
     return listFiles
 
-def load_annoataion(p):
+def load_annotation(p):
     '''
     load annotation from the text file
     :param p:
@@ -44,7 +44,7 @@ def load_annoataion(p):
 
         return text_tags
 
-strs = [load_annoataion(p) for p in GetAllFiles(icdarFolder)]
+strs = [load_annotationw(p) for p in GetAllFiles(icdarFolder)]
 strs = [j for s in strs for j in s if j]
 strs = [k for j in strs if len(j.strip()) > 0 for k in j.strip()]
 # print strs

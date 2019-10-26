@@ -43,7 +43,7 @@ tf.app.flags.DEFINE_float('min_crop_side_ratio', 0.3,
                           'min length of min(H, W')
 tf.app.flags.DEFINE_string('geometry', 'RBOX',
                            'which geometry to generate, RBOX or QUAD')
-
+tf.app.flags.DEFINE_string('unRecgStr', '', 'this is temporary set')
 
 
 FLAGS = tf.app.flags.FLAGS
@@ -81,7 +81,7 @@ def get_images():
     return listFiles
 
 
-def load_annoataion(p):
+def load_annotation(p):
     '''
     load annotation from the text file
     :param p:
@@ -94,8 +94,7 @@ def load_annoataion(p):
     with open(p, 'r', encoding="utf-8") as f:
         reader = csv.reader(f)
         for line in reader:
-            print("LINE:", line)
-            label = line[-1].replace(' ')
+            label = line[-1].replace('###', ' ')
             line = [i.strip('\ufeff').strip('\xef\xbb\xbf') for i in line]
 
             x1, y1, x2, y2, x3, y3, x4, y4 = list(map(float, line[:8]))
@@ -841,7 +840,7 @@ def generator(input_size=224, batch_size=32,random_scale=np.array([0.5, 3.0]),vi
                     print('text file {} does not exists'.format(txt_fn))
                     continue
 
-                text_polys, text_tags = load_annoataion(txt_fn)
+                text_polys, text_tags = load_annotation(txt_fn)
 
                 text_polys, text_tags = check_and_validate_polys(text_polys, text_tags, (h, w))
                 im, text_polys, text_tags = argument(im, text_polys, text_tags)
