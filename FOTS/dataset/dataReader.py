@@ -15,11 +15,14 @@ import tensorflow as tf
 
 from FOTS.dataset.data_util import GeneratorEnqueuer
 
+#import os
+#print(os.path.abspath("."))
+
 tf.app.flags.DEFINE_string(
-    'training_data_path', '/dl_data/m-taketani/practice/FOTS/dataSet/img/', 'training dataset to use')
+    'training_data_path', 'dataSet/img/', 'training dataset to use')
 tf.app.flags.DEFINE_string(
-    'training_anno_path', '/dl_data/m-taketani/practice/FOTS/dataSet/anno/', 'training dataset to use')
-tf.app.flags.DEFINE_string('vocb_path', '/dl_data/m-taketani/practice/FOTS/dataSet/vocab/ch4_training_vocabulary.txt', 'vocb file path')
+    'training_anno_path', 'dataSet/anno/', 'training dataset to use')
+tf.app.flags.DEFINE_string('vocb_path', 'dataSet/vocab/ch4_training_vocabulary.txt', 'vocb file path')
 
 tf.app.flags.DEFINE_bool('avoid_vertText', True, 'avoid_vertText')
 tf.app.flags.DEFINE_bool('allow_unknown_char', True, 'allow unknown char')
@@ -60,7 +63,7 @@ if FLAGS.allow_unknown_char:
     encode_maps[' '] = len(CLASSES)
 
 NUM_CLASSES = len(decode_maps)
-print("NUM_CLASSES", NUM_CLASSES)
+
 def get_images():
     """
     获得path目录（文件）下的所有的文件序列，包括子目录
