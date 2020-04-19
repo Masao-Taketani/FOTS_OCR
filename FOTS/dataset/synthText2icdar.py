@@ -13,7 +13,7 @@ def Mat2Xml(matfile, saveFolder):
 
     train_file = open(os.path.join(saveFolder, 'train.txt'), 'w')
     test_file = open(os.path.join(saveFolder, 'test.txt'), 'w')
-    
+
     for i in range(len(data['txt'][0])):
         contents = []
         for val in data['txt'][0][i]:
@@ -26,11 +26,11 @@ def Mat2Xml(matfile, saveFolder):
         else:
             rec = rec.transpose(1,0)[np.newaxis, :]
 
-        doc = xml.dom.minidom.Document() 
-        root = doc.createElement('annotation') 
-        doc.appendChild(root) 
+        doc = xml.dom.minidom.Document()
+        root = doc.createElement('annotation')
+        doc.appendChild(root)
         print("start to process {} object".format(len(rec)))
-        
+
         for j in range(len(rec)):
             nodeobject = doc.createElement('object')
             nodecontent = doc.createElement('content')
@@ -76,7 +76,7 @@ def Mat2Xml(matfile, saveFolder):
         if rad > 18:
             train_file.write(file_line)
         else:
-            test_file.write(file_line)    
+            test_file.write(file_line)
 
     train_file.close()
     test_file.close()
@@ -100,7 +100,7 @@ def Mat2icdar(matfile, saveFolder):
 
         root = []
         print("start to process {} object".format(len(rec)))
-        
+
         for j in range(len(rec)):
             infos = []
             infos.append(str(int(rec[j][0][0])))
@@ -120,4 +120,4 @@ def Mat2icdar(matfile, saveFolder):
         fp.close()
 
 if __name__=='__main__':
-    Mat2icdar('dataFolder/')
+    Mat2icdar('gt.mat', 'data/SynthText/after_preprocessing')
