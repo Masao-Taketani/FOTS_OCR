@@ -91,7 +91,8 @@ def Mat2icdar(matfile, saveFolder):
         for val in data['txt'][0][i]:
             v = [x.split("\n") for x in val.strip().split(" ")]
             contents.extend(sum(v, []))
-        print >> sys.stderr, "No.{} data".format(i)
+        error_msg = "No.{} data".format(i)
+        print(error_msg, file=sys.stderr)
         rec = np.array(data['wordBB'][0][i], dtype=np.int32)
         if len(rec.shape) == 3:
             rec = rec.transpose(2,1,0)
@@ -115,9 +116,14 @@ def Mat2icdar(matfile, saveFolder):
             root.append(infos)
 
         filename = data['imnames'][0][i][0].replace('.jpg', '.icdar')
+        dir_name = os.path.dirname(filename)
+        img_dir_path = os.path.join(saveFolder, dir_name)
+        if not os.path.exists(img_dir_path):
+            print("created dir {}".format(dir_name))
+            os.makedirs(img_dir_path, exist_ok=True)
         fp = open(os.path.join(saveFolder, filename), 'w')
-        fp.write('\n'.join([','.join([for i in j]) for j in root]))
+        fp.write('\n'.join([','.join([i for i in j]) for j in root]))
         fp.close()
 
 if __name__=='__main__':
-    Mat2icdar('gt.mat', 'data/SynthText/after_preprocessing')
+    Mat2icdar('data/SynthText/before_preprocessing/gt.mat', 'data/SynthText/after_preprocessing')
