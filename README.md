@@ -9,7 +9,7 @@ This repo is python3 version of https://github.com/yu20103983/FOTS.
 ~~3. Pretraining the whole net by [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) for 10 epochs.~~<br>
 
 1. Download a [pre-trained model](https://github.com/Pay20Y/FOTS_TF/releases/download/v2/SynthText_6_epochs.tar) with [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) which can be originally found at [Pay20Y/FOTS_TF](https://github.com/Pay20Y/FOTS_TF/tree/dev).
-2. 
+2.
 
 ## Train
 
@@ -26,3 +26,4 @@ You should give the path to the dataset labeled in ICDAR format in file 'FOTS/da
   - https://github.com/Pay20Y/FOTS_TF/tree/dev<br>
   - https://github.com/kaiminghe/deep-residual-networks<br>
   - https://github.com/ry/tensorflow-resnet<br>
+  - https://github.com/Parquery/lanms<br>
