@@ -115,7 +115,7 @@ def Mat2icdar(matfile, saveFolder):
             infos.append(str(contents[j]))
             root.append(infos)
 
-        filename = data['imnames'][0][i][0].replace('.jpg', '.icdar')
+        filename = data['imnames'][0][i][0].replace('.jpg', '.txt')
         dir_name = os.path.dirname(filename)
         img_dir_path = os.path.join(saveFolder, dir_name)
         if not os.path.exists(img_dir_path):
@@ -126,4 +126,4 @@ def Mat2icdar(matfile, saveFolder):
         fp.close()
 
 if __name__=='__main__':
-    Mat2icdar('data/SynthText/before_preprocessing/gt.mat', 'data/SynthText/after_preprocessing')
+    Mat2icdar('data/SynthText/before_preprocessing/gt.mat', 'data/SynthText')

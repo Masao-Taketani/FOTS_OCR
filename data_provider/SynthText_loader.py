@@ -40,11 +40,12 @@ class SynthTextLoader(DataLoader):
 					else:
 						label = line[-1]
 
+					# convert str to numbers(int or float)
 					temp_line = list(map(eval, line[:8]))
 					if self.check_minus(temp_line):
 						continue
 					x1, y1, x2, y2, x3, y3, x4, y4 = map(float, temp_line)
-					
+
 					text_polys.append([[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
 					text_tags.append(False)
 					labels.append(label_to_array(label))
