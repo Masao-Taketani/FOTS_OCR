@@ -89,9 +89,9 @@ def Mat2icdar(matfile, saveFolder):
     for i in range(len(data['txt'][0])):
         contents = []
         for val in data['txt'][0][i]:
-            v = [x.strip() for x in val.strip().split("\n")]
-            #contents.extend(sum(v, []))
-            contents.extend(v)
+            v = [x.strip().split(" ") for x in val.strip().split("\n")]
+            # concatenate all of the list elements
+            contents.extend(sum(v, []))
         error_msg = "No.{} data".format(i)
         print(error_msg, file=sys.stderr)
         rec = np.array(data['wordBB'][0][i], dtype=np.int32)
