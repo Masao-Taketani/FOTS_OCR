@@ -92,6 +92,7 @@ def Mat2icdar(matfile, saveFolder):
             v = [x.strip().split(" ") for x in val.strip().split("\n")]
             # concatenate all of the list elements
             contents.extend(sum(v, []))
+        contents = [el for el in contents if el != '']
         error_msg = "No.{} data".format(i)
         print(error_msg, file=sys.stderr)
         rec = np.array(data['wordBB'][0][i], dtype=np.int32)
@@ -102,6 +103,7 @@ def Mat2icdar(matfile, saveFolder):
 
         root = []
         print("start to process {} object".format(len(rec)))
+        assert len(rec) == len(contents), "filename {}: the length of the objects and the labels differ.".format(data['imnames'][0][i][0])
 
         for j in range(len(rec)):
             infos = []
@@ -113,6 +115,7 @@ def Mat2icdar(matfile, saveFolder):
             infos.append(str(int(rec[j][2][1])))
             infos.append(str(int(rec[j][3][0])))
             infos.append(str(int(rec[j][3][1])))
+            assert len(str(contents[j])) != 0, "filename {}: lebel length is 0".format(data['imnames'][0][i][0])
             infos.append(str(contents[j]))
             root.append(infos)
 
@@ -127,4 +130,4 @@ def Mat2icdar(matfile, saveFolder):
         fp.close()
 
 if __name__=='__main__':
-    Mat2icdar('data/SynthText/before_preprocessing/gt.mat', 'data/SynthText')
+    Mat2icdar('data/SynthText/gt.mat', 'data/SynthText')
