@@ -89,8 +89,10 @@ def Mat2icdar(matfile, saveFolder):
     for i in range(len(data['txt'][0])):
         contents = []
         for val in data['txt'][0][i]:
-            v = [x.split("\n") for x in val.strip().split(" ")]
+            v = [x.strip().split(" ") for x in val.strip().split("\n")]
+            # concatenate all of the list elements
             contents.extend(sum(v, []))
+        contents = [el for el in contents if el != '']
         error_msg = "No.{} data".format(i)
         print(error_msg, file=sys.stderr)
         rec = np.array(data['wordBB'][0][i], dtype=np.int32)
@@ -101,6 +103,7 @@ def Mat2icdar(matfile, saveFolder):
 
         root = []
         print("start to process {} object".format(len(rec)))
+        assert len(rec) == len(contents), "filename {}: the length of the objects and the labels differ.".format(data['imnames'][0][i][0])
 
         for j in range(len(rec)):
             infos = []
@@ -112,10 +115,11 @@ def Mat2icdar(matfile, saveFolder):
             infos.append(str(int(rec[j][2][1])))
             infos.append(str(int(rec[j][3][0])))
             infos.append(str(int(rec[j][3][1])))
+            assert len(str(contents[j])) != 0, "filename {}: lebel length is 0".format(data['imnames'][0][i][0])
             infos.append(str(contents[j]))
             root.append(infos)
 
-        filename = data['imnames'][0][i][0].replace('.jpg', '.icdar')
+        filename = data['imnames'][0][i][0].replace('.jpg', '.txt')
         dir_name = os.path.dirname(filename)
         img_dir_path = os.path.join(saveFolder, dir_name)
         if not os.path.exists(img_dir_path):
@@ -126,4 +130,4 @@ def Mat2icdar(matfile, saveFolder):
         fp.close()
 
 if __name__=='__main__':
-    Mat2icdar('data/SynthText/before_preprocessing/gt.mat', 'data/SynthText/after_preprocessing')
+    Mat2icdar('data/SynthText/gt.mat', 'data/SynthText')
