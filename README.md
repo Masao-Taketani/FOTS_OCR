@@ -13,20 +13,31 @@ rm resnet_v1_50_2016_08_28.tar.gz
 ```
 2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) to pre-train the whole net.(The dataset is only available or non-commercial research and educational purposes)<br>
 
-3. Preprocess the SynthText data.
-``` python FOTS/synthText2icdar.py```
+3. Preprocess the SynthText data.<br>
+``` 
+python FOTS/synthText2icdar.py
+```
 
-4. Train with SynthText for 10 epochs.
-```sh train_synthText_10eps.sh```
+4. Train with SynthText for 10 epochs.<br>
+```
+sh train_synthText_10eps.sh
+```
+
+### Finetune with ICDAR 2015, ICDAR 2017 MLT or ICDAR 2013
+- ICDAR 2015
+  1. Train the pre-trained model with 9,000 images from ICDAR 2017 MLT training and validation datasets.
+  2. Train the model with 1,000 images from ICDAR 2015 training dataset and 229 images from ICDAR 2013 training datasets.
+  
+- ICDAR 2017 MLT(text detection task only)
+  1. Train the pre-trained model with 9,000 images from ICDAR 2017 MLT training and validation datasets.
+  
+- ICDAR 2013(horizontal text only)
+  1. Train the pre-trained model with 9,000 images from ICDAR 2017 MLT training and validation datasets.
+  2. Train the model with 229 images from ICDAR 2013 training datasets.
 
 ~~1. Download a [pre-trained model](https://github.com/Pay20Y/FOTS_TF/releases/download/v2/SynthText_6_epochs.tar) with [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) which can be originally found at [Pay20Y/FOTS_TF](https://github.com/Pay20Y/FOTS_TF/tree/dev).
 2.~~
 
-~~## Train~~
-
-~~`python multigpu_train.py [gpu_list]`~~
-
-~~You should give the path to the dataset labeled in ICDAR format in file 'FOTS/dataset/dataReader.py'~~
 
 ## References
 - Paper
