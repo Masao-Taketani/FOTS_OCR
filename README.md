@@ -1,6 +1,9 @@
 # FOTS: Fast Oriented Text Spotting with a Unified Network
 
-**I am still working on this repo. So more codes and detailed instructions are coming soon!**
+**I am still working on this repo. updates and detailed instructions are coming soon!**
+
+## TensorFlow Versions
+As for now, the pre-training code is tested on TensorFlow 1.12 and 1.14. I may try to implement 2.x version in the future.
 
 ## Train from Scratch
 ### Pretrain with SynthText
