@@ -7,11 +7,11 @@ As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I
 
 ## Datasets
 - pre-training<br>
-[Synth800k](https://www.robots.ox.ac.uk/~vgg/data/scenetext/)
+[Synth800k](https://www.robots.ox.ac.uk/~vgg/data/scenetext/)(The dataset is only available for non-commercial research and educational purposes)
 - finetuning<br>
 [ICDAR 2015, 2017MLT, 2013](https://rrc.cvc.uab.es/)
 
-## Train from Scratch
+## Train
 ### Pretrain with SynthText
 1. Download [pre-trained ResNet-50](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz) from [TensorFlow-Slim image classification model library](https://github.com/tensorflow/models/tree/master/research/slim) page and place it at the 'ckpt/resnet_v1_50' dir.<br>
 ```
@@ -20,10 +20,10 @@ wget http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz
 tar -zxvf resnet_v1_50_2016_08_28.tar.gz
 rm resnet_v1_50_2016_08_28.tar.gz
 ```
-2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) to pre-train the whole net.(The dataset is only available or non-commercial research and educational purposes)<br>
+2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) to pre-train the whole net.<br>
 
 3. Preprocess the SynthText data.<br>
-``` 
+```
 python FOTS/synthText2icdar.py
 ```
 
@@ -44,7 +44,7 @@ python main_train.py --max_steps=715625 --gpu_list='0' --checkpoint_path=ckpt/sy
   ```
   python main_train.py --gpu_list='0' --checkpoint_path=ckpt/ICDAR15/ --pretrained_model_path=ckpt/ICDAR17MLT/ --training_data_dir=data/ICDAR15+13/ --training_gt_data_dir=data/ICDAR15+13/
   ```
-  
+
 - ICDAR 2013(horizontal text only)
   - Train the model with 229 images from ICDAR 2013 training datasets(with 1 GPU).
   ```
