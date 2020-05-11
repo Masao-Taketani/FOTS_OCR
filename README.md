@@ -13,14 +13,14 @@ As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I
 
 ## Train
 ### Pre-train with SynthText
-1. Download [pre-trained ResNet-50](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz) from [TensorFlow-Slim image classification model library](https://github.com/tensorflow/models/tree/master/research/slim) page and place it at the 'ckpt/resnet_v1_50' dir.<br>
+1. Download [pre-trained ResNet-50](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz) from [TensorFlow-Slim image classification model library](https://github.com/tensorflow/models/tree/master/research/slim) page and place it at 'ckpt/resnet_v1_50' dir.<br>
 ```
 cd ckpt/resnet_v1_50
 wget http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz
 tar -zxvf resnet_v1_50_2016_08_28.tar.gz
 rm resnet_v1_50_2016_08_28.tar.gz
 ```
-2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) to pre-train the whole net.<br>
+2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) and place it at 'data/SynthText/' dir to pre-train the whole net.<br>
 
 3. Preprocess the SynthText data.<br>
 ```
