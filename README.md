@@ -12,7 +12,7 @@ As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I
 [ICDAR 2015, 2017MLT, 2013](https://rrc.cvc.uab.es/)
 
 ## Train
-### Pretrain with SynthText
+### Pre-train with SynthText
 1. Download [pre-trained ResNet-50](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz) from [TensorFlow-Slim image classification model library](https://github.com/tensorflow/models/tree/master/research/slim) page and place it at the 'ckpt/resnet_v1_50' dir.<br>
 ```
 cd ckpt/resnet_v1_50
@@ -36,6 +36,10 @@ python main_train.py \
   --pretrained_model_path=ckpt/resnet_v1_50/resnet_v1_50.ckpt \
   --training_data_dir=data/SynthText/ \
   --training_gt_data_dir=data/SynthText
+```
+5. Visualize pre-pretraining progress with TensorBoard.
+```
+tensorboard --logdir=ckpt/synthText_10eps/
 ```
 
 ### Finetune with ICDAR 2015, ICDAR 2017 MLT or ICDAR 2013
