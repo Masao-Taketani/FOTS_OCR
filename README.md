@@ -5,6 +5,9 @@
 ## TensorFlow Versions
 As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I may try to implement 2.x version in the future.
 
+## Trained Models
+  **Coming Soon!**
+  
 ## Datasets
 - pre-training<br>
 [Synth800k](https://www.robots.ox.ac.uk/~vgg/data/scenetext/)(The dataset is only available for non-commercial research and educational purposes)
@@ -22,7 +25,7 @@ rm resnet_v1_50_2016_08_28.tar.gz
 ```
 2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) and place it at 'data/SynthText/' dir to pre-train the whole net.<br>
 
-3. Preprocess the SynthText data.<br>
+3. Transform(Pre-process) the SynthText data into the ICDAR data format.<br>
 ```
 python FOTS/synthText2icdar.py
 ```
