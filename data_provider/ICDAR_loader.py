@@ -30,15 +30,25 @@ class ICDARLoader(DataLoader):
 					line = line.strip()
 					line = line.split(',')
 					if self.edition == '17':
-						line.pop(8) # since icdar17 has script
-					# Deal with transcription containing ,
+						# skip the type of language part
+						line.pop(8)
+					# Deal with labels containing ","
 					if len(line) > 9:
 						label = line[8]
 						for i in range(len(line) - 9):
 							label = label + "," + line[i+9]
 					else:
 						label = line[-1]
-
+				 	"""
+					eval: evaluate equations written by letters
+					(e.g.)
+					>>> eval('1 + 2')
+					3
+					map: it applies a given function to every element of a given
+					     array
+				    	usage(python3): list(map(func, array))
+					"""
+					# converting the data type of each element from str to int
 					temp_line = list(map(eval, line[:8]))
 					x1, y1, x2, y2, x3, y3, x4, y4 = map(float, temp_line)
 
@@ -54,5 +64,5 @@ class ICDARLoader(DataLoader):
 					continue
 		text_polys = np.array(text_polys)
 		text_tags = np.array(text_tags)
-
+		# data type↓: np.array, np.array, list of lines of letter ids 
 		return text_polys, text_tags, labels

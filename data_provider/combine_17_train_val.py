@@ -3,7 +3,8 @@ import os
 import subprocess
 
 before_dir = "tmp/ICDAR17MLT/"
-after_dir = "data/ICDAR17MLT/"
+imgs_dir = "data/ICDAR17MLT/imgs/"
+gts_dir = "data/ICDAR17MLT/gts/"
 
 def change_val_file_names(fpath):
     val_dirs = ["val_imgs", "val_gts"]
@@ -13,7 +14,10 @@ def change_val_file_names(fpath):
         for fpath in val_files:
             dir_name = os.path.dirname(fpath)
             fname = os.path.basename(fpath)
-            val_fname = "val_" + fname
+            if fname.split(".")[-1] == "txt":
+                val_fname = fname[:3] + "val_" + fname[3:]
+            else:
+                val_fname = "val_" + fname
             new_path = os.path.join(dir_name, val_fname)
             os.rename(fpath, new_path)
 
