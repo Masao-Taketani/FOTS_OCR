@@ -39,7 +39,7 @@ class ICDARLoader(DataLoader):
 							label = label + "," + line[i+9]
 					else:
 						label = line[-1]
-				 	"""
+					"""
 					eval: evaluate equations written by letters
 					(e.g.)
 					>>> eval('1 + 2')
@@ -64,5 +64,5 @@ class ICDARLoader(DataLoader):
 					continue
 		text_polys = np.array(text_polys)
 		text_tags = np.array(text_tags)
-		# data type↓: np.array, np.array, list of lines of letter ids 
+		# data type↓: np.array, np.array, list of lines of letter ids
 		return text_polys, text_tags, labels

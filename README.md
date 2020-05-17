@@ -7,7 +7,7 @@ As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I
 
 ## Trained Models
   **Coming Soon!**
-  
+
 ## Datasets
 - pre-training<br>
 [Synth800k](https://www.robots.ox.ac.uk/~vgg/data/scenetext/)(The dataset is only available for non-commercial research and educational purposes)
@@ -53,7 +53,8 @@ tensorboard --logdir=ckpt/synthText_10eps/
     --gpu_list='0' \
     --checkpoint_path=ckpt/ICDAR17MLT/ \
     --pretrained_model_path=ckpt/synthText_10eps/ \
-    --train_stage=0 --training_data_dir=data/ICDAR17MLT/ \
+    --train_stage=0 \
+    --training_data_dir=data/ICDAR17MLT/ \
     --training_gt_data_dir=data/ICDAR17MLT/
   ```
 

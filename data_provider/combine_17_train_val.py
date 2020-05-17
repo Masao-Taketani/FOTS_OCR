@@ -27,9 +27,14 @@ def change_val_file_names():
             os.rename(fpath, new_path)
 
 def move_files(orig_dir, to_dir):
+    check_dir_existence(to_dir)
     cmd = "mv {}/* {}".format(orig_dir, to_dir)
-    subprocess.run(cmd.split())
+    subprocess.run(cmd, shell=True)
 
+def check_dir_existence(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        
 def return_num_of_files(path):
     files = glob(os.path.join(path, "*"))
     return len(files)
