@@ -9,11 +9,11 @@ class ICDARLoader(DataLoader):
 		self.edition = edition
 		self.shuffle = shuffle # shuffle the polygons
 
-	def get_images():
+	def get_images(self, data_dir):
 	    files = []
 	    for ext in ['jpg', 'png', 'jpeg', 'JPG']:
 	        files.extend(glob.glob(
-	            os.path.join(FLAGS.training_data_path, '*.{}'.format(ext))))
+	            os.path.join(data_dir,'*.{}'.format(ext))))
 	    return files
 
 	def load_annotation(self, gt_file):

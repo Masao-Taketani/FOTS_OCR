@@ -7,24 +7,16 @@ import cv2
 from itertools import compress
 from data_provider.data_utils import check_and_validate_polys, crop_area, rotate_image, generate_rbox, get_project_matrix_and_width, sparse_tuple_from, crop_area_fix
 from data_provider.ICDAR_loader import ICDARLoader
-
-# for SynthText
-from data_provider.SynthText_loader import SynthTextLoader
-
+# from data_provider.SynthText_loader import SynthTextLoader
 from data_provider.data_enqueuer import GeneratorEnqueuer
 
 
-def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, random_scale=np.array([0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2]),):
-    # for SynthText
-    data_loader = SynthTextLoader()
-
-    ## data_loader = ICDARLoader(edition='13', shuffle=True)
-
+def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, random_scale=np.array([0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2]), edition):
+    # data_loader = SynthTextLoader()
+    data_loader = ICDARLoader(edition=edition, shuffle=True)
+    # image_list = np.array(data_loader.get_images(FLAGS.training_data_dir))
     image_list = np.array(data_loader.get_images(input_images_dir))
-
-    # for SynthText
-    print('{} training images in {} '.format(image_list.shape[0], input_images_dir))
-
+    # print('{} training images in {} '.format(image_list.shape[0], FLAGS.training_data_dir))
     index = np.arange(0, image_list.shape[0])
     while True:
         np.random.shuffle(index)
@@ -43,27 +35,19 @@ def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, ran
         for i in index:
             try:
                 im_fn = image_list[i]
-
-                # for SynthText
                 # print(im_fn)
-                if im_fn.split(".")[0][-1] == '0' or im_fn.split(".")[0][-1] == '2':
-                    continue
-
+                # if im_fn.split(".")[0][-1] == '0' or im_fn.split(".")[0][-1] == '2':
+                #     continue
                 im = cv2.imread(os.path.join(input_images_dir, im_fn))
                 h, w, _ = im.shape
-
-                ## file_name = "gt_" + im_fn.replace(os.path.basename(im_fn).split('.')[1], 'txt').split('/')[-1]
-
-                # using for synthtext
-                file_name = im_fn.replace(im_fn.split('.')[1], 'txt')
-                txt_fn = os.path.join(input_images_dir, file_name)
-
-                ## txt_fn = os.path.join(input_gt_dir, file_name)
-
+                file_name = "gt_" + im_fn.replace(os.path.basename(im_fn).split('.')[1], 'txt').split('/')[-1]
+                # file_name = im_fn.replace(im_fn.split('.')[1], 'txt') # using for synthtext
+                # txt_fn = os.path.join(FLAGS.training_gt_data_dir, file_name)
+                txt_fn = os.path.join(input_gt_dir, file_name)
                 if not os.path.exists(txt_fn):
                     print('text file {} does not exists'.format(txt_fn))
                     continue
-                # print(txt_fn)
+                print(txt_fn)
                 text_polys, text_tags, text_labels = data_loader.load_annotation(txt_fn) # Change for load text transiption
 
                 if text_polys.shape[0] == 0:

@@ -15,11 +15,16 @@ tf.app.flags.DEFINE_boolean('restore', False, 'whether to resotre from checkpoin
 tf.app.flags.DEFINE_integer('save_checkpoint_steps', 1000, '')
 tf.app.flags.DEFINE_integer('save_summary_steps', 100, '')
 tf.app.flags.DEFINE_string('pretrained_model_path', None, '')
-tf.app.flags.DEFINE_integer('train_stage', 2, '0-train detection only; 1-train recognition only; 2-train end-to-end; 3-train end-to-end absolutely')
-tf.app.flags.DEFINE_string('training_data_dir', default='', help='training images dir')
-tf.app.flags.DEFINE_string('training_gt_data_dir', default='', help='training gt dir')
+tf.app.flags.DEFINE_integer('train_stage',
+                            2,
+                            '0-train detection only; 1-train recognition only; 2-train end-to-end; 3-train end-to-end absolutely')
+tf.app.flags.DEFINE_string('training_img_data_dir', default='', help='training images dir')
+tf.app.flags.DEFINE_string('training_gt_data_dir', default='', help='training gts dir')
+tf.app.flags.DEFINE_boolean('icdar',
+                            True,
+                            'Whether to train on ICDAR(If False, it trains on SynthText)')
+tf.app.flags.DEFINE_boolean('17mlt', False, 'Whether to train on ICDAR17MLT')
 
-from data_provider import data_generator
 from module import Backbone_branch, Recognition_branch, RoI_rotate
 
 FLAGS = tf.app.flags.FLAGS
@@ -30,18 +35,40 @@ detect_part = Backbone_branch.Backbone(is_training=True)
 roi_rotate_part = RoI_rotate.RoIRotate()
 recognize_part = Recognition_branch.Recognition(is_training=False)
 
-def build_graph(input_images, input_transform_matrix, input_box_masks, input_box_widths, input_seq_len):
+def build_graph(input_images,
+                input_transform_matrix,
+                input_box_masks,
+                input_box_widths,
+                input_seq_len):
 
     shared_feature, f_score, f_geometry = detect_part.model(input_images)
     # if FLAGS.train_stage == 1:
     #     shared_feature = tf.stop_gradient(shared_feature)
-    pad_rois = roi_rotate_part.roi_rotate_tensor_pad(shared_feature, input_transform_matrix, input_box_masks, input_box_widths)
+    pad_rois = roi_rotate_part.roi_rotate_tensor_pad(shared_feature,
+                                                     input_transform_matrix,
+                                                     input_box_masks,
+                                                     input_box_widths)
     recognition_logits = recognize_part.build_graph(pad_rois, input_box_widths)
     return f_score, f_geometry, recognition_logits
 
-def compute_loss(f_score, f_geometry, recognition_logits, input_score_maps, input_geo_maps, input_training_masks, input_transcription, input_box_widths, lamda=0.01):
-    detection_loss = detect_part.loss(input_score_maps, f_score, input_geo_maps, f_geometry, input_training_masks)
-    recognition_loss = recognize_part.loss(recognition_logits, input_transcription, input_box_widths)
+def compute_loss(f_score,
+                 f_geometry,
+                 recognition_logits,
+                 input_score_maps,
+                 input_geo_maps,
+                 input_training_masks,
+                 input_transcription,
+                 input_box_widths,
+                 lamda=0.01):
+
+    detection_loss = detect_part.loss(input_score_maps,
+                                      f_score,
+                                      input_geo_maps,
+                                      f_geometry,
+                                      input_training_masks)
+    recognition_loss = recognize_part.loss(recognition_logits,
+                                           input_transcription,
+                                           input_box_widths)
 
     tf.summary.scalar('detect_loss', detection_loss)
     tf.summary.scalar('recognize_loss', recognition_loss)
@@ -57,6 +84,11 @@ def compute_loss(f_score, f_geometry, recognition_logits, input_score_maps, inpu
 
 def main(argv=None):
     import os
+    if FLAGS.icdar:
+        from data_provider import ICDAR_data_generator as data_generator
+    else:
+        from data_provider import SynthText_data_generator as data_generator
+
     os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu_list
     if not tf.gfile.Exists(FLAGS.checkpoint_path):
         tf.gfile.MkDir(FLAGS.checkpoint_path)
@@ -65,32 +97,61 @@ def main(argv=None):
             tf.gfile.DeleteRecursively(FLAGS.checkpoint_path)
             tf.gfile.MkDir(FLAGS.checkpoint_path)
 
-    input_images = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_images')
-    input_score_maps = tf.placeholder(tf.float32, shape=[None, None, None, 1], name='input_score_maps')
-    input_geo_maps = tf.placeholder(tf.float32, shape=[None, None, None, 5], name='input_geo_maps')
-    input_training_masks = tf.placeholder(tf.float32, shape=[None, None, None, 1], name='input_training_masks')
-    input_transcription = tf.sparse_placeholder(tf.int32, name='input_transcription')
+    input_images = tf.placeholder(tf.float32,
+                                  shape=[None, None, None, 3],
+                                  name='input_images')
+    input_score_maps = tf.placeholder(tf.float32,
+                                      shape=[None, None, None, 1],
+                                      name='input_score_maps')
+    input_geo_maps = tf.placeholder(tf.float32,
+                                    shape=[None, None, None, 5],
+                                    name='input_geo_maps')
+    input_training_masks = tf.placeholder(tf.float32,
+                                          shape=[None, None, None, 1],
+                                          name='input_training_masks')
+    input_transcription = tf.sparse_placeholder(tf.int32,
+                                                name='input_transcription')
 
-    input_transform_matrix = tf.placeholder(tf.float32, shape=[None, 6], name='input_transform_matrix')
+    input_transform_matrix = tf.placeholder(tf.float32,
+                                            shape=[None, 6],
+                                            name='input_transform_matrix')
     input_transform_matrix = tf.stop_gradient(input_transform_matrix)
     input_box_masks = []
 
-    input_box_widths = tf.placeholder(tf.int32, shape=[None], name='input_box_widths')
+    input_box_widths = tf.placeholder(tf.int32,
+                                      shape=[None],
+                                      name='input_box_widths')
     input_seq_len = input_box_widths[tf.argmax(input_box_widths, 0)] * tf.ones_like(input_box_widths)
 
     for i in range(FLAGS.batch_size_per_gpu):
-        input_box_masks.append(tf.placeholder(tf.int32, shape=[None], name='input_box_masks_' + str(i)))
+        input_box_masks.append(tf.placeholder(tf.int32,
+                                              shape=[None],
+                                              name='input_box_masks_' + str(i)))
 
-    f_score, f_geometry, recognition_logits = build_graph(input_images, input_transform_matrix, input_box_masks, input_box_widths, input_seq_len)
+    f_score, f_geometry, recognition_logits = build_graph(input_images,
+                                                          input_transform_matrix,
+                                                          input_box_masks,
+                                                          input_box_widths,
+                                                          input_seq_len)
 
-    global_step = tf.get_variable('global_step', [], initializer=tf.constant_initializer(0), trainable=False)
+    global_step = tf.get_variable('global_step',
+                                  [],
+                                  initializer=tf.constant_initializer(0),
+                                  trainable=False)
     # learning_rate = tf.train.exponential_decay(FLAGS.learning_rate, global_step, decay_steps=10000, decay_rate=0.94, staircase=True)
     learning_rate = FLAGS.learning_rate
     # add summary
     tf.summary.scalar('learning_rate', learning_rate)
     opt = tf.train.AdamOptimizer(learning_rate)
 
-    d_loss, r_loss, model_loss = compute_loss(f_score, f_geometry, recognition_logits, input_score_maps, input_geo_maps, input_training_masks, input_transcription, input_box_widths)
+    d_loss, r_loss, model_loss = compute_loss(f_score,
+                                              f_geometry,
+                                              recognition_logits,
+                                              input_score_maps,
+                                              input_geo_maps,
+                                              input_training_masks,
+                                              input_transcription,
+                                              input_box_widths)
     # total_loss = detect_part.loss(input_score_maps, f_score, input_geo_maps, f_geometry, input_training_masks)
     tf.summary.scalar('total_loss', model_loss)
     total_loss = tf.add_n([model_loss] + tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
@@ -143,9 +204,25 @@ def main(argv=None):
             if FLAGS.pretrained_model_path is not None:
                 variable_restore_op(sess)
 
-        dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir, input_gt_dir=FLAGS.training_gt_data_dir, num_workers=FLAGS.num_readers,
-                                         input_size=FLAGS.input_size,
-                                         batch_size=FLAGS.batch_size_per_gpu)
+        if FLAGS.icdar:
+            if FLAGS.17mlt:
+                dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir,
+                                              input_gt_dir=FLAGS.training_gt_data_dir,
+                                              num_workers=FLAGS.num_readers,
+                                              input_size=FLAGS.input_size,
+                                              batch_size=FLAGS.batch_size_per_gpu, '17')
+            else:
+                dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir,
+                                              input_gt_dir=FLAGS.training_gt_data_dir,
+                                              num_workers=FLAGS.num_readers,
+                                              input_size=FLAGS.input_size,
+                                              batch_size=FLAGS.batch_size_per_gpu, '13')
+        else:
+                dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir,
+                                              input_gt_dir=FLAGS.training_gt_data_dir,
+                                              num_workers=FLAGS.num_readers,
+                                              input_size=FLAGS.input_size,
+                                              batch_size=FLAGS.batch_size_per_gpu)
 
         start = time.time()
         for step in range(FLAGS.max_steps):
