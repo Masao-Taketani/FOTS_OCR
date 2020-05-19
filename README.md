@@ -57,7 +57,7 @@ tensorboard --logdir=ckpt/synthText_10eps/
     --train_stage=0 \
     --training_img_data_dir=data/ICDAR17MLT/imgs/ \
     --training_gt_data_dir=data/ICDAR17MLT/gts/ \
-    --17mlt=True
+    --seventeen=True
   ```
 
 - ICDAR 2015

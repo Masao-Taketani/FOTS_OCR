@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import glob
 from .data_loader import DataLoader
 from .data_utils import label_to_array
 
@@ -8,13 +9,6 @@ class ICDARLoader(DataLoader):
 		super(ICDARLoader, self).__init__()
 		self.edition = edition
 		self.shuffle = shuffle # shuffle the polygons
-
-	def get_images(self, data_dir):
-	    files = []
-	    for ext in ['jpg', 'png', 'jpeg', 'JPG']:
-	        files.extend(glob.glob(
-	            os.path.join(data_dir,'*.{}'.format(ext))))
-	    return files
 
 	def load_annotation(self, gt_file):
 		text_polys = []

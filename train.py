@@ -23,7 +23,7 @@ tf.app.flags.DEFINE_string('training_gt_data_dir', default='', help='training gt
 tf.app.flags.DEFINE_boolean('icdar',
                             True,
                             'Whether to train on ICDAR(If False, it trains on SynthText)')
-tf.app.flags.DEFINE_boolean('17mlt', False, 'Whether to train on ICDAR17MLT')
+tf.app.flags.DEFINE_boolean('seventeen', False, 'Whether to train on ICDAR17MLT')
 
 from module import Backbone_branch, Recognition_branch, RoI_rotate
 
@@ -205,20 +205,22 @@ def main(argv=None):
                 variable_restore_op(sess)
 
         if FLAGS.icdar:
-            if FLAGS.17mlt:
-                dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir,
+            if FLAGS.seventeen:
+                dg = data_generator.get_batch(input_images_dir=FLAGS.training_img_data_dir,
                                               input_gt_dir=FLAGS.training_gt_data_dir,
                                               num_workers=FLAGS.num_readers,
                                               input_size=FLAGS.input_size,
-                                              batch_size=FLAGS.batch_size_per_gpu, '17')
+                                              batch_size=FLAGS.batch_size_per_gpu,
+                                              edition='17')
             else:
-                dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir,
+                dg = data_generator.get_batch(input_images_dir=FLAGS.training_img_data_dir,
                                               input_gt_dir=FLAGS.training_gt_data_dir,
                                               num_workers=FLAGS.num_readers,
                                               input_size=FLAGS.input_size,
-                                              batch_size=FLAGS.batch_size_per_gpu, '13')
+                                              batch_size=FLAGS.batch_size_per_gpu,
+                                              edition='13')
         else:
-                dg = data_generator.get_batch(input_images_dir=FLAGS.training_data_dir,
+                dg = data_generator.get_batch(input_images_dir=FLAGS.training_img_data_dir,
                                               input_gt_dir=FLAGS.training_gt_data_dir,
                                               num_workers=FLAGS.num_readers,
                                               input_size=FLAGS.input_size,
