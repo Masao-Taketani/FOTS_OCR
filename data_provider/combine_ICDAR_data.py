@@ -78,20 +78,20 @@ def process(orig_imgs_dir,
 if __name__ == "__main__":
     if FLAGS.year == "13":
         # file paths that are moved from
-        orig_imgs_dir = "tmp/ICDAR13/imgs"
-        orig_gts_dir = "tmp/ICDAR13/gts"
-        orig_val_imgs_dir = "tmp/ICDAR13/val_imgs"
-        orig_val_gts_dir = "tmp/ICDAR13/val_gts"
+        orig_imgs_dir = "tmp/ICDAR13/Challenge2_Training_Task12_Images"
+        orig_gts_dir = "tmp/ICDAR13/Challenge2_Training_Task1_GT"
+        orig_val_imgs_dir = "tmp/ICDAR13/Challenge2_Test_Task12_Images"
+        orig_val_gts_dir = "tmp/ICDAR13/Challenge2_Test_Task1_GT"
         # file paths that are moved to
         imgs_dir = "data/ICDAR13/imgs"
         gts_dir = "data/ICDAR13/gts"
 
     elif FLAGS.year == "15":
         # file paths that are moved from
-        orig_imgs_dir = "tmp/ICDAR15/imgs"
-        orig_gts_dir = "tmp/ICDAR15/gts"
-        orig_val_imgs_dir = "tmp/ICDAR15/val_imgs"
-        orig_val_gts_dir = "tmp/ICDAR15/val_gts"
+        orig_imgs_dir = "tmp/ICDAR15/ch4_training_images"
+        orig_gts_dir = "tmp/ICDAR15/ch4_training_localization_transcription_gt"
+        orig_val_imgs_dir = "tmp/ICDAR15/ch4_test_images"
+        orig_val_gts_dir = "tmp/ICDAR15/Challenge4_Test_Task1_GT"
         # file paths that are moved to
         imgs_dir = "data/ICDAR15+13/imgs"
         gts_dir = "data/ICDAR15+13/gts"
