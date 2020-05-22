@@ -12,7 +12,7 @@ tf.app.flags.DEFINE_string('year',
 
 FLAGS = tf.app.flags.FLAGS
 
-def change_file_name(imgs_dir, gts_dir, is_train):
+def change_file_names(imgs_dir, gts_dir, is_train):
     dirs = [imgs_dir, gts_dir]
     for dir in dirs:
         path = os.path.join(dir, "*")
@@ -22,16 +22,16 @@ def change_file_name(imgs_dir, gts_dir, is_train):
             fname = os.path.basename(fpath)
             if fname.split(".")[-1] == "txt":
                 if is_train:
-                    fname = fname[:3] + orig_imgs_dir.split('/')[1] + fname[3:]
+                    fname = fname[:3] + orig_imgs_dir.split('/')[1] + "_" + fname[3:]
                 else:
                     fname = fname[:3] + orig_imgs_dir.split('/')[1]  + "_val_" + fname[3:]
             else:
                 if is_train:
-                    fname = orig_imgs_dir.split('/')[1] + fname
+                    fname = orig_imgs_dir.split('/')[1] + "_" + fname
                 else:
-                    fname = orig_imgs_dir.split('/')[1] + "val_" * fname
+                    fname = orig_imgs_dir.split('/')[1] + "_val_" + fname
             new_path = os.path.join(dir_name, fname)
-            os.rename(fpath, new_path))
+            os.rename(fpath, new_path)
 
 def move_files(orig_dir, to_dir):
     check_dir_existence(to_dir)
@@ -118,14 +118,15 @@ if __name__ == "__main__":
                 gts_dir)
 
     if FLAGS.year == "15":
-        orig_imgs_dir = "tmp/ICDAR13/imgs"
-        orig_gts_dir = "tmp/ICDAR13/gts"
-        orig_val_imgs_dir = "tmp/ICDAR13/val_imgs"
-        orig_val_gts_dir = "tmp/ICDAR13/val_gts"
+        # file paths that are moved from
+        orig_imgs_dir = "tmp/ICDAR13/Challenge2_Training_Task12_Images"
+        orig_gts_dir = "tmp/ICDAR13/Challenge2_Training_Task1_GT"
+        orig_val_imgs_dir = "tmp/ICDAR13/Challenge2_Test_Task12_Images"
+        orig_val_gts_dir = "tmp/ICDAR13/Challenge2_Test_Task1_GT"
 
-            process(orig_imgs_dir,
-                        orig_gts_dir,
-                        orig_val_imgs_dir,
-                        orig_val_gts_dir,
-                        imgs_dir,
-                        gts_dir)
+        process(orig_imgs_dir,
+                    orig_gts_dir,
+                    orig_val_imgs_dir,
+                    orig_val_gts_dir,
+                    imgs_dir,
+                    gts_dir)
