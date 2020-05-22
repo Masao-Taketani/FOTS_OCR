@@ -12,20 +12,26 @@ tf.app.flags.DEFINE_string('year',
 
 FLAGS = tf.app.flags.FLAGS
 
-def change_val_file_names(orig_val_imgs_dir, orig_val_gts_dir, year):
-    val_dirs = [orig_val_imgs_dir, orig_val_gts_dir]
-    for val_dir in val_dirs:
-        val_path = os.path.join(val_dir, "*")
-        val_files = glob(val_path)
-        for fpath in val_files:
+def change_file_name(imgs_dir, gts_dir, is_train):
+    dirs = [imgs_dir, gts_dir]
+    for dir in dirs:
+        path = os.path.join(dir, "*")
+        files = glob(path)
+        for fpath in files:
             dir_name = os.path.dirname(fpath)
             fname = os.path.basename(fpath)
             if fname.split(".")[-1] == "txt":
-                val_fname = fname[:3] + "val_" + fname[3:]
+                if is_train:
+                    fname = fname[:3] + orig_imgs_dir.split('/')[1] + fname[3:]
+                else:
+                    fname = fname[:3] + orig_imgs_dir.split('/')[1]  + "_val_" + fname[3:]
             else:
-                val_fname = "val_" + fname
-            new_path = os.path.join(dir_name, val_fname)
-            os.rename(fpath, new_path)
+                if is_train:
+                    fname = orig_imgs_dir.split('/')[1] + fname
+                else:
+                    fname = orig_imgs_dir.split('/')[1] + "val_" * fname
+            new_path = os.path.join(dir_name, fname)
+            os.rename(fpath, new_path))
 
 def move_files(orig_dir, to_dir):
     check_dir_existence(to_dir)
@@ -56,8 +62,9 @@ def process(orig_imgs_dir,
         check_num_of_files(orig_val_imgs_dir, orig_val_gts_dir)
         print("count check passed")
 
-        change_val_file_names(orig_val_imgs_dir, orig_val_gts_dir)
-        print("changing the file names of val imgs & val gts is done")
+        change_file_names(orig_imgs_dir, orig_gts_dir, True)
+        change_file_names(orig_val_imgs_dir, orig_val_gts_dir, False)
+        print("changing the names of imgs & gts files is done")
 
         move_files(orig_imgs_dir, imgs_dir)
         move_files(orig_gts_dir, gts_dir)
@@ -100,7 +107,7 @@ if __name__ == "__main__":
         gts_dir = "data/ICDAR17MLT/gts"
 
     else:
-        raise ValueError("pick a year among 13,15 or 17: you picked %s"
+        raise ValueError("pick a year from 13,15 or 17: you picked %s"
                          % (FLAGS.year))
 
     process(orig_imgs_dir,
