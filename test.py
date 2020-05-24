@@ -10,10 +10,10 @@ import locality_aware_nms as nms_locality
 import lanms
 from bktree import BKTree, levenshtein, list_words
 
-tf.app.flags.DEFINE_string('test_data_path', '/home/qz/data/ICDAR15/ch4_test_images/', '')
-tf.app.flags.DEFINE_string('gpu_list', '0', '')
-tf.app.flags.DEFINE_string('checkpoint_path', 'checkpoints/', '')
-tf.app.flags.DEFINE_string('output_dir', 'outputs/', '')
+tf.app.flags.DEFINE_string('test_data_path', 'test_imgs/', 'test images dir')
+tf.app.flags.DEFINE_string('gpu_list', '0', 'input number of GPUs')
+tf.app.flags.DEFINE_string('checkpoint_path', 'checkpoints/', 'checkpoint path to load')
+tf.app.flags.DEFINE_string('output_dir', 'outputs/', 'dir to output result images')
 tf.app.flags.DEFINE_bool('no_write_images', True, 'do not write images')
 # tf.app.flags.DEFINE_bool('use_vacab', True, 'strong, normal or weak')
 
@@ -102,8 +102,10 @@ def detect(score_map, geo_map, timer, score_map_thresh=0.8, box_thresh=0.1, nms_
     timer['restore'] = time.time() - start
     # nms part
     start = time.time()
-    # boxes = nms_locality.nms_locality(boxes.astype(np.float64), nms_thres)
-    boxes = lanms.merge_quadrangle_n9(boxes.astype('float32'), nms_thres)
+    # python ver nms
+    boxes = nms_locality.nms_locality(boxes.astype(np.float64), nms_thres)
+    # C++ ver nms
+    #boxes = lanms.merge_quadrangle_n9(boxes.astype('float32'), nms_thres)
     timer['nms'] = time.time() - start
 
     if boxes.shape[0] == 0:
@@ -128,7 +130,7 @@ def get_project_matrix_and_width(text_polyses, target_height=8.0):
     for i in range(text_polyses.shape[0]):
         x1, y1, x2, y2, x3, y3, x4, y4 = text_polyses[i] / 4
 
-        rotated_rect = cv2.minAreaRect(np.array([[x1, y1], [x2, y2], [x3, y3], [x4, y4]]))
+        rotated_rect = cv2.minAreaRect(np.array([[x1, y1], [x2, y2], [x3, y3], [x4, y4]], dtype=np.int64))
         box_w, box_h = rotated_rect[1][0], rotated_rect[1][1]
 
         if box_w <= box_h:
@@ -141,8 +143,8 @@ def get_project_matrix_and_width(text_polyses, target_height=8.0):
         width_box = int(min(width_box, 128)) # not to exceed feature map's width
         # width_box = int(min(width_box, 512)) # not to exceed feature map's width
         """
-        if width_box > max_width: 
-            max_width = width_box 
+        if width_box > max_width:
+            max_width = width_box
         """
         mapped_x2, mapped_y2 = (width_box, 0)
         # mapped_x3, mapped_y3 = (width_box, 8)
@@ -185,7 +187,7 @@ def main(argv=None):
     if FLAGS.use_vacab and os.path.exists("./vocab.txt"):
         bk_tree = BKTree(levenshtein, list_words('./vocab.txt'))
         # bk_tree = bktree.Tree()
-    """            
+    """
     with tf.get_default_graph().as_default():
         input_images = tf.placeholder(tf.float32, shape=[None, None, None, 3], name='input_images')
         input_feature_map = tf.placeholder(tf.float32, shape=[None, None, None, 32], name='input_feature_map')
@@ -221,7 +223,7 @@ def main(argv=None):
                 timer = {'detect': 0, 'restore': 0, 'nms': 0, 'recog': 0}
                 start = time.time()
                 shared_feature_map, score, geometry = sess.run([shared_feature, f_score, f_geometry], feed_dict={input_images: [im_resized]})
-                
+
                 boxes, timer = detect(score_map=score, geo_map=geometry, timer=timer)
                 timer['detect'] = time.time() - start
                 start = time.time() # reset for recognition
@@ -239,7 +241,7 @@ def main(argv=None):
                         boxes_masks = [0] * tmp_roi_boxes.shape[0]
                         transform_matrixes, box_widths = get_project_matrix_and_width(tmp_roi_boxes)
                         # max_box_widths = max_width * np.ones(boxes_masks.shape[0]) # seq_len
-                    
+
                         # Run end to end
                         recog_decode = sess.run(dense_decode, feed_dict={input_feature_map: shared_feature_map, input_transform_matrix: transform_matrixes, input_box_mask[0]: boxes_masks, input_box_widths: box_widths})
                         recog_decode_list.extend([r for r in recog_decode])
@@ -270,7 +272,7 @@ def main(argv=None):
                             f.write('{},{},{},{},{},{},{},{},{}\r\n'.format(
                                 box[0, 0], box[0, 1], box[1, 0], box[1, 1], box[2, 0], box[2, 1], box[3, 0], box[3, 1], recognition_result
                             ))
-                            
+
                             # Draw bounding box
                             cv2.polylines(im[:, :, ::-1], [box.astype(np.int32).reshape((-1, 1, 2))], True, color=(255, 255, 0), thickness=1)
                             # Draw recognition results area
