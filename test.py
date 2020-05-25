@@ -1,4 +1,3 @@
-
 import cv2
 import time
 import math
@@ -14,7 +13,7 @@ tf.app.flags.DEFINE_string('test_data_path', 'test_imgs/', 'test images dir')
 tf.app.flags.DEFINE_string('gpu_list', '0', 'input number of GPUs')
 tf.app.flags.DEFINE_string('checkpoint_path', 'checkpoints/', 'checkpoint path to load')
 tf.app.flags.DEFINE_string('output_dir', 'outputs/', 'dir to output result images')
-tf.app.flags.DEFINE_bool('no_write_images', True, 'do not write images')
+tf.app.flags.DEFINE_bool('no_write_images', True, 'use the flag not to output the result images')
 # tf.app.flags.DEFINE_bool('use_vacab', True, 'strong, normal or weak')
 
 from module import Backbone_branch, Recognition_branch, RoI_rotate
@@ -103,9 +102,9 @@ def detect(score_map, geo_map, timer, score_map_thresh=0.8, box_thresh=0.1, nms_
     # nms part
     start = time.time()
     # python ver nms
-    boxes = nms_locality.nms_locality(boxes.astype(np.float64), nms_thres)
+    #boxes = nms_locality.nms_locality(boxes.astype(np.float64), nms_thres)
     # C++ ver nms
-    #boxes = lanms.merge_quadrangle_n9(boxes.astype('float32'), nms_thres)
+    boxes = lanms.merge_quadrangle_n9(boxes.astype('float32'), nms_thres)
     timer['nms'] = time.time() - start
 
     if boxes.shape[0] == 0:

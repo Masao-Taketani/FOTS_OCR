@@ -5,6 +5,9 @@
 ## TensorFlow Versions
 As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I may try to implement 2.x version in the future.
 
+## Other Requirements
+GCC >= 6
+
 ## Trained Models
   **Coming Soon!**
 
