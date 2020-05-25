@@ -87,6 +87,13 @@ tensorboard --logdir=ckpt/synthText_10eps/
     --training_img_data_dir=data/ICDAR13/imgs/ \
     --training_gt_data_dir=data/ICDAR13/gts/
   ```
+  
+## Test
+Place some images in `test_imgs` dir and specify a trained checkpoint path to see the test result.
+```
+python test.py --test_data_path test_imgs/ --checkpoint_path [checkpoint path]
+```
+  
 ~~1. Download a [pre-trained model](https://github.com/Pay20Y/FOTS_TF/releases/download/v2/SynthText_6_epochs.tar) with [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) which can be originally found at [Pay20Y/FOTS_TF](https://github.com/Pay20Y/FOTS_TF/tree/dev).
 2.~~
 
