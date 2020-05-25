@@ -2,8 +2,8 @@
 
 **I am still working on this repo. updates and detailed instructions are coming soon!**
 
-<img src="imgs/img_165.jpg" width="400"/>   <img src="imgs/img_201.jpg" width="400"/>
-<img src="imgs/img_113.jpg" width="400"/>   <img src="imgs/img_132.jpg" width="400"/>
+<img src="imgs/img_165.jpg" width="430"/>   <img src="imgs/img_201.jpg" width="430"/>
+<img src="imgs/img_113.jpg" width="430"/>   <img src="imgs/img_132.jpg" width="430"/>
 
 ## TensorFlow Versions
 As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I may try to implement 2.x version in the future.
