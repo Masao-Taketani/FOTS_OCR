@@ -30,7 +30,7 @@ rm resnet_v1_50_2016_08_28.tar.gz
 
 3. Transform(Pre-process) the SynthText data into the ICDAR data format.<br>
 ```
-python FOTS/synthText2icdar.py
+python data_provider/SynthText2ICDAR.py
 ```
 
 4. Train with SynthText for 10 epochs(with 1 GPU).<br>
