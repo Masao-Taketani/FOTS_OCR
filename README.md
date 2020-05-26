@@ -2,6 +2,9 @@
 
 **I am still working on this repo. updates and detailed instructions are coming soon!**
 
+<img src="imgs/img_165.jpg" width="445"/>   <img src="imgs/img_201.jpg" width="445"/>
+<img src="imgs/img_113.jpg" width="445"/>   <img src="imgs/img_132.jpg" width="445"/>
+
 ## TensorFlow Versions
 As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I may try to implement 2.x version in the future.
 
@@ -84,6 +87,13 @@ tensorboard --logdir=ckpt/synthText_10eps/
     --training_img_data_dir=data/ICDAR13/imgs/ \
     --training_gt_data_dir=data/ICDAR13/gts/
   ```
+  
+## Test
+Place some images in `test_imgs` dir and specify a trained checkpoint path to see the test result.
+```
+python test.py --test_data_path test_imgs/ --checkpoint_path [checkpoint path]
+```
+  
 ~~1. Download a [pre-trained model](https://github.com/Pay20Y/FOTS_TF/releases/download/v2/SynthText_6_epochs.tar) with [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) which can be originally found at [Pay20Y/FOTS_TF](https://github.com/Pay20Y/FOTS_TF/tree/dev).
 2.~~
 
