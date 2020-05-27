@@ -22,14 +22,14 @@ def change_file_names(imgs_dir, gts_dir, is_train):
             fname = os.path.basename(fpath)
             if fname.split(".")[-1] == "txt":
                 if is_train:
-                    fname = fname[:3] + orig_imgs_dir.split('/')[1] + "_" + fname[3:]
+                    fname = fname[:3] + imgs_dir.split('/')[1] + "_" + fname[3:]
                 else:
-                    fname = fname[:3] + orig_imgs_dir.split('/')[1]  + "_val_" + fname[3:]
+                    fname = fname[:3] + imgs_dir.split('/')[1]  + "_val_" + fname[3:]
             else:
                 if is_train:
-                    fname = orig_imgs_dir.split('/')[1] + "_" + fname
+                    fname = imgs_dir.split('/')[1] + "_" + fname
                 else:
-                    fname = orig_imgs_dir.split('/')[1] + "_val_" + fname
+                    fname = imgs_dir.split('/')[1] + "_val_" + fname
             new_path = os.path.join(dir_name, fname)
             os.rename(fpath, new_path)
 

@@ -5,15 +5,25 @@ from .data_loader import DataLoader
 from .data_utils import label_to_array
 
 class ICDARLoader(DataLoader):
-	def __init__(self, edition='13', shuffle=False):
+	def __init__(self, shuffle=False):
 		super(ICDARLoader, self).__init__()
-		self.edition = edition
 		self.shuffle = shuffle # shuffle the polygons
 
 	def load_annotation(self, gt_file):
+		fname = os.path.basename(gt_file)
 		text_polys = []
 		text_tags = []
 		labels = []
+		if "13" in fname:
+			year = "13"
+		elif "15" in fname:
+			year = "15"
+		elif "17" in fname:
+			year = "17"
+		else:
+			print("improper file name {}".format(gt_file))
+			continue
+
 		if not os.path.exists(gt_file):
 			return np.array(text_polys, dtype=np.float32)
 		with open(gt_file, 'r', encoding="utf-8-sig") as f:
@@ -22,10 +32,15 @@ class ICDARLoader(DataLoader):
 					line = line.replace('\xef\xbb\bf', '')
 					line = line.replace('\xe2\x80\x8d', '')
 					line = line.strip()
-					line = line.split(',')
-					if self.edition == '17':
+					if year == '13':
+						line = line.split()
+					else:
+						line = line.split(',')
+
+					if year == '17':
 						# skip the type of language part
 						line.pop(8)
+
 					# Deal with labels containing ","
 					if len(line) > 9:
 						label = line[8]
@@ -33,19 +48,30 @@ class ICDARLoader(DataLoader):
 							label = label + "," + line[i+9]
 					else:
 						label = line[-1]
-					"""
-					eval: evaluate equations written by letters
-					(e.g.)
-					>>> eval('1 + 2')
-					3
-					map: it applies a given function to every element of a given
-					     array
-				    	usage(python3): list(map(func, array))
-					"""
-					# converting the data type of each element from str to int
-					temp_line = list(map(eval, line[:8]))
-					x1, y1, x2, y2, x3, y3, x4, y4 = map(float, temp_line)
 
+					if year == '13':
+						"""
+						eval: evaluate equations written by letters
+						(e.g.)
+						>>> eval('1 + 2')
+						3
+						map: it applies a given function to every element of a given
+						     array
+					    	usage(python3): list(map(func, array))
+						"""
+						# converting the data type of each element from str to int
+						xyxy = list(map(eval, line[:4]))
+						temp_line = []
+						temp_line.append(xyxy.extend(xyxy[:2]))
+						temp_line.append(xyxy.append(xyxy[2]))
+						temp_line.append(xyxy.append(xyxy[1]))
+						temp_line.append(xyxy.extend(xyxy[2:]))
+						temp_line.append(xyxy.append(xyxy[0]))
+						temp_line.append(xyxy.append(xyxy[3]))
+					else:
+						temp_line = list(map(eval, line[:8]))
+
+					x1, y1, x2, y2, x3, y3, x4, y4 = map(float, temp_line)
 					text_polys.append([[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
 					if label == '*' or label == '###' or label == '':
 						text_tags.append(True)
@@ -53,10 +79,12 @@ class ICDARLoader(DataLoader):
 					else:
 						labels.append(label_to_array(label))
 						text_tags.append(False)
+
 				except Exception as e:
 					print(e)
+					print('reading file error: {}'.format(gt_file))
 					continue
 		text_polys = np.array(text_polys)
 		text_tags = np.array(text_tags)
-		# data type↓: np.array, np.array, list of lines of letter ids
+		# data type↓: list of np.array, list of np.array, list of lines of letter ids
 		return text_polys, text_tags, labels
