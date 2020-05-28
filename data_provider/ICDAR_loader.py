@@ -5,9 +5,9 @@ from .data_loader import DataLoader
 from .data_utils import label_to_array
 
 class ICDARLoader(DataLoader):
-	def __init__(self, shuffle=False):
+	def __init__(self):
 		super(ICDARLoader, self).__init__()
-		self.shuffle = shuffle # shuffle the polygons
+		#self.shuffle = shuffle # shuffle the polygons
 
 	def load_annotation(self, gt_file):
 		fname = os.path.basename(gt_file)

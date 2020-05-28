@@ -11,8 +11,8 @@ from data_provider.ICDAR_loader import ICDARLoader
 from data_provider.data_enqueuer import GeneratorEnqueuer
 
 
-def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, random_scale=np.array([0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2]), edition='13'):
-    data_loader = ICDARLoader(edition=edition, shuffle=True)
+def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, random_scale=np.array([0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2])):
+    data_loader = ICDARLoader()
     image_list = np.array(data_loader.get_images(input_images_dir))
     print('{} training images in {} '.format(image_list.shape[0], input_images_dir))
     index = np.arange(0, image_list.shape[0])
