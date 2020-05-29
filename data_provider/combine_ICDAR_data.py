@@ -41,7 +41,7 @@ def change_delimiter(fpath, deli):
         txt = fr.read()
 
     new_txt = ''
-    for line in txt.readlines():
+    for line in txt.splitlines():
         new_txt += deli.join(line.split()) + '\n'
 
     with open(fpath, 'w') as fw:

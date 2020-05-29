@@ -33,7 +33,7 @@ class ICDARLoader(DataLoader):
 					line = line.replace('\xe2\x80\x8d', '')
 					line = line.strip()
 					line = line.split(',')
-					
+
 					#if year == '13':
 					#	line = line.split()
 					#else:
@@ -64,12 +64,13 @@ class ICDARLoader(DataLoader):
 						# converting the data type of each element from str to int
 						xyxy = list(map(eval, line[:4]))
 						temp_line = []
-						temp_line.append(xyxy.extend(xyxy[:2]))
-						temp_line.append(xyxy.append(xyxy[2]))
-						temp_line.append(xyxy.append(xyxy[1]))
-						temp_line.append(xyxy.extend(xyxy[2:]))
-						temp_line.append(xyxy.append(xyxy[0]))
-						temp_line.append(xyxy.append(xyxy[3]))
+                        temp_line.extend(xyxy[:2])
+                        temp_line.append(xyxy[2])
+                        temp_line.append(xyxy[1])
+                        temp_line.extend(xyxy[2:])
+                        temp_line.append(xyxy[0])
+                        temp_line.append(xyxy[3])
+
 					else:
 						temp_line = list(map(eval, line[:8]))
 
