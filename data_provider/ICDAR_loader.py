@@ -32,10 +32,12 @@ class ICDARLoader(DataLoader):
 					line = line.replace('\xef\xbb\bf', '')
 					line = line.replace('\xe2\x80\x8d', '')
 					line = line.strip()
-					if year == '13':
-						line = line.split()
-					else:
-						line = line.split(',')
+					line = line.split(',')
+					
+					#if year == '13':
+					#	line = line.split()
+					#else:
+					#	line = line.split(',')
 
 					if year == '17':
 						# skip the type of language part

@@ -23,6 +23,9 @@ def change_file_names(imgs_dir, gts_dir, is_train):
             if fname.split(".")[-1] == "txt":
                 if is_train:
                     fname = fname[:3] + imgs_dir.split('/')[1] + "_" + fname[3:]
+
+                    if '13' in imgs_dir.split('/')[1]:
+                        change_delimiter(fpath, ',')
                 else:
                     fname = fname[:3] + imgs_dir.split('/')[1]  + "_val_" + fname[3:]
             else:
@@ -32,6 +35,17 @@ def change_file_names(imgs_dir, gts_dir, is_train):
                     fname = imgs_dir.split('/')[1] + "_val_" + fname
             new_path = os.path.join(dir_name, fname)
             os.rename(fpath, new_path)
+
+def change_delimiter(fpath, deli):
+    with open(fpath, 'r') as fr:
+        txt = fr.read()
+
+    new_txt = ''
+    for line in txt.readlines():
+        new_txt += deli.join(line.split()) + '\n'
+
+    with open(fpath, 'w') as fw:
+        fw.write(new_txt)
 
 def move_files(orig_dir, to_dir):
     check_dir_existence(to_dir)
