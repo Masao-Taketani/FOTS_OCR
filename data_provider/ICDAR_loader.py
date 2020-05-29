@@ -21,11 +21,11 @@ class ICDARLoader(DataLoader):
 		elif "17" in fname:
 			year = "17"
 		else:
-			print("improper file name {}".format(gt_file))
-			continue
+			raise Exception("improper file name {}".format(gt_file))
 
 		if not os.path.exists(gt_file):
 			return np.array(text_polys, dtype=np.float32)
+
 		with open(gt_file, 'r', encoding="utf-8-sig") as f:
 			for line in f.readlines():
 				try:
@@ -77,13 +77,15 @@ class ICDARLoader(DataLoader):
 						text_tags.append(True)
 						labels.append([-1])
 					else:
+						if year == '13':
+							label = label.replace('"', '')
 						labels.append(label_to_array(label))
 						text_tags.append(False)
 
 				except Exception as e:
 					print(e)
 					print('reading file error: {}'.format(gt_file))
-					continue
+
 		text_polys = np.array(text_polys)
 		text_tags = np.array(text_tags)
 		# data type↓: list of np.array, list of np.array, list of lines of letter ids
