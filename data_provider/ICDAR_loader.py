@@ -81,7 +81,7 @@ class ICDARLoader(DataLoader):
 						labels.append([-1])
 					else:
 						if year == '13':
-							label = label.replace('"', '')
+							label = label[1:-1]
 						labels.append(label_to_array(label))
 						text_tags.append(False)
 
