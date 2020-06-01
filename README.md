@@ -5,6 +5,23 @@
 <img src="imgs/img_165.jpg" width="445"/>   <img src="imgs/img_201.jpg" width="445"/>
 <img src="imgs/img_113.jpg" width="445"/>   <img src="imgs/img_132.jpg" width="445"/>
 
+## Table of Contens
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [TensorFlow Versions](#tensorflow-versions)
+- [Other Requirements](#other-requirements)
+- [Trained Models](#trained-models)
+- [Datasets](#datasets)
+- [Train](#train)
+  - [Pre-train with SynthText](#pre-train-with-synthtext)
+  - [Finetune with ICDAR 2015, ICDAR 2017 MLT or ICDAR 2013](#finetune-with-icdar-2015-icdar-2017-mlt-or-icdar-2013)
+- [Test](#test)
+- [References](#references)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## TensorFlow Versions
 As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I may try to implement 2.x version in the future.
 
