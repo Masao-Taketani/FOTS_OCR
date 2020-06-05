@@ -70,6 +70,13 @@ tensorboard --logdir=ckpt/synthText_10eps/
 ```
 
 ### Finetune with ICDAR 2015, ICDAR 2017 MLT or ICDAR 2013
+- Combine ICDAR data before training.
+  1. Place ICDAR data under `tmp` foler.
+  2. Run the following script to combine the data.
+  ```
+  python combine_ICDAR_data.py --year [year of ICDAR to train(13 or 15 or 17)]
+  ```
+  
 - ICDAR 2017 MLT/pre-finetune for ICDAR 2013 or ICDAR 2015 (text detection task only)
   - Train the pre-trained model with 9,000 images from ICDAR 2017 MLT training and validation datasets(with 1 GPU).
   ```
