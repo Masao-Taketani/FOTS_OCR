@@ -59,7 +59,7 @@ def compute_loss(f_score,
                  input_training_masks,
                  input_transcription,
                  input_box_widths,
-                 lamda=0.01):
+                 lamda=1.0):
 
     detection_loss = detect_part.loss(input_score_maps,
                                       f_score,
@@ -159,7 +159,8 @@ def main(argv=None):
     batch_norm_updates_op = tf.group(*tf.get_collection(tf.GraphKeys.UPDATE_OPS))
     if FLAGS.train_stage == 1:
         print("Train recognition branch only!")
-        recog_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='recog')
+        recog_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+                                       scope='recog')
         # grads = opt.compute_gradients(total_loss, recog_vars)
         grads = opt.compute_gradients(total_loss)
     else:
@@ -172,15 +173,18 @@ def main(argv=None):
 
     summary_op = tf.summary.merge_all()
     # save moving average
-    variable_averages = tf.train.ExponentialMovingAverage(
-        FLAGS.moving_average_decay, global_step)
+    variable_averages = tf.train.ExponentialMovingAverage(FLAGS.moving_average_decay,
+                                                          global_step)
     variables_averages_op = variable_averages.apply(tf.trainable_variables())
     # batch norm updates
-    with tf.control_dependencies([variables_averages_op, apply_gradient_op, batch_norm_updates_op]):
+    with tf.control_dependencies([variables_averages_op,
+                                  apply_gradient_op,
+                                  batch_norm_updates_op]):
         train_op = tf.no_op(name='train_op')
 
     saver = tf.train.Saver(tf.global_variables(), max_to_keep=1)
-    summary_writer = tf.summary.FileWriter(FLAGS.checkpoint_path, tf.get_default_graph())
+    summary_writer = tf.summary.FileWriter(FLAGS.checkpoint_path,
+                                           tf.get_default_graph())
 
     init = tf.global_variables_initializer()
 
@@ -188,12 +192,14 @@ def main(argv=None):
         if os.path.isdir(FLAGS.pretrained_model_path):
             print("Restore pretrained model from other datasets")
             ckpt = tf.train.latest_checkpoint(FLAGS.pretrained_model_path)
-            variable_restore_op = slim.assign_from_checkpoint_fn(ckpt, slim.get_trainable_variables(),
-                                                             ignore_missing_vars=True)
+            variable_restore_op = slim.assign_from_checkpoint_fn(ckpt,
+                                                                 slim.get_trainable_variables(),
+                                                                 ignore_missing_vars=True)
         else: # is *.ckpt
             print("Restore pretrained model from imagenet")
-            variable_restore_op = slim.assign_from_checkpoint_fn(FLAGS.pretrained_model_path, slim.get_trainable_variables(),
-                                                             ignore_missing_vars=True)
+            variable_restore_op = slim.assign_from_checkpoint_fn(FLAGS.pretrained_model_path,
+                                                                 slim.get_trainable_variables(),
+                                                                 ignore_missing_vars=True)
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         if FLAGS.restore:
             print('continue training from previous checkpoint')
@@ -225,7 +231,11 @@ def main(argv=None):
                 inp_dict[input_box_masks[i]] = data[6][i]
 
 
-            dl, rl, tl, _ = sess.run([d_loss, r_loss, total_loss, train_op], feed_dict=inp_dict)
+            dl, rl, tl, _ = sess.run([d_loss,
+                                      r_loss,
+                                      total_loss,
+                                      train_op],
+                                     feed_dict=inp_dict)
             if np.isnan(tl):
                 print('Loss diverged, stop training')
                 break
@@ -235,7 +245,12 @@ def main(argv=None):
                 avg_examples_per_second = (10 * FLAGS.batch_size_per_gpu)/(time.time() - start)
                 start = time.time()
                 print('Step {:06d}, detect_loss {:.4f}, recognize_loss {:.4f}, total loss {:.4f}, {:.2f} seconds/step, {:.2f} examples/second'.format(
-                    step, dl, rl, tl, avg_time_per_step, avg_examples_per_second))
+                    step,
+                    dl,
+                    rl,
+                    tl,
+                    avg_time_per_step,
+                    avg_examples_per_second))
 
                 """
                 print "recognition results: "
@@ -244,7 +259,9 @@ def main(argv=None):
                 """
 
             if step % FLAGS.save_checkpoint_steps == 0:
-                saver.save(sess, FLAGS.checkpoint_path + 'model.ckpt', global_step=global_step)
+                saver.save(sess,
+                           FLAGS.checkpoint_path + 'model.ckpt',
+                           global_step=global_step)
 
             if step % FLAGS.save_summary_steps == 0:
                 """
@@ -253,7 +270,11 @@ def main(argv=None):
                                                                                              input_geo_maps: data[3],
                                                                                              input_training_masks: data[4]})
                 """
-                dl, rl, tl, _, summary_str = sess.run([d_loss, r_loss, total_loss, train_op, summary_op], feed_dict=inp_dict)
+                dl, rl, tl, _, summary_str = sess.run([d_loss,
+                                                       r_loss,
+                                                       total_loss,
+                                                       train_op, summary_op],
+                                                      feed_dict=inp_dict)
 
                 summary_writer.add_summary(summary_str, global_step=step)
 
