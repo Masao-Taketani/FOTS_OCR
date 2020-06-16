@@ -5,7 +5,9 @@ import numpy as np
 import tensorflow as tf
 import cv2
 from itertools import compress
-from data_provider.data_utils import check_and_validate_polys, crop_area, rotate_image, generate_rbox, get_project_matrix_and_width, sparse_tuple_from, crop_area_fix
+from data_provider.data_utils import check_and_validate_polys, crop_area, \
+rotate_image, generate_rbox, get_project_matrix_and_width, sparse_tuple_from, \
+crop_area_fix
 from data_provider.ICDAR_loader import ICDARLoader
 
 # for SynthText
@@ -14,7 +16,12 @@ from data_provider.SynthText_loader import SynthTextLoader
 from data_provider.data_enqueuer import GeneratorEnqueuer
 
 
-def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, random_scale=np.array([0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2]),):
+def generator(input_images_dir,
+              input_gt_dir,
+              input_size=512,
+              batch_size=12,
+              random_scale=np.array([0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2]),):
+
     # for SynthText
     data_loader = SynthTextLoader()
 
@@ -64,12 +71,16 @@ def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, ran
                     print('text file {} does not exists'.format(txt_fn))
                     continue
                 #print(txt_fn)
-                text_polys, text_tags, text_labels = data_loader.load_annotation(txt_fn) # Change for load text transiption
+                # Change for load text transiption
+                text_polys, text_tags, text_labels = data_loader.load_annotation(txt_fn)
 
                 if text_polys.shape[0] == 0:
                     continue
 
-                text_polys, text_tags, text_labels = check_and_validate_polys(text_polys, text_tags, text_labels, (h, w))
+                text_polys, text_tags, text_labels = check_and_validate_polys(text_polys,
+                                                                              text_tags,
+                                                                              text_labels,
+                                                                              (h, w))
 
                 ############################# Data Augmentation ##############################
                 # random scale this image
@@ -82,8 +93,14 @@ def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, ran
                 im, text_polys = rotate_image(im, text_polys, angle)
 
                 # 600×600 random samples are cropped.
-                im, text_polys, text_tags, selected_poly = crop_area(im, text_polys, text_tags, crop_background=False)
-                # im, text_polys, text_tags, selected_poly = crop_area_fix(im, text_polys, text_tags, crop_size=(600, 600))
+                im, text_polys, text_tags, selected_poly = crop_area(im,
+                                                                     text_polys,
+                                                                     text_tags,
+                                                                     crop_background=False)
+                # im, text_polys, text_tags, selected_poly = crop_area_fix(im,
+                #                                                           text_polys,
+                #                                                           text_tags,
+                #                                                           crop_size=(600, 600))
                 text_labels = [text_labels[i] for i in selected_poly]
                 if text_polys.shape[0] == 0 or len(text_labels) == 0:
                     continue
@@ -105,7 +122,9 @@ def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, ran
                 text_polys[:, :, 1] *= resize_ratio_3_y
                 new_h, new_w, _ = im.shape
 
-                score_map, geo_map, training_mask, rectangles = generate_rbox((new_h, new_w), text_polys, text_tags)
+                score_map, geo_map, training_mask, rectangles = generate_rbox((new_h, new_w),
+                                                                               text_polys,
+                                                                               text_tags)
 
                 mask = [not (word == [-1]) for word in text_labels]
                 text_labels = list(compress(text_labels, mask))
@@ -134,7 +153,8 @@ def generator(input_images_dir, input_gt_dir, input_size=512, batch_size=12, ran
                 if len(batch_images) == batch_size:
                     batch_text_polyses = np.concatenate(batch_text_polyses)
                     batch_text_tagses = np.concatenate(batch_text_tagses)
-                    batch_transform_matrixes, batch_box_widths = get_project_matrix_and_width(batch_text_polyses, batch_text_tagses)
+                    batch_transform_matrixes, batch_box_widths = get_project_matrix_and_width(batch_text_polyses,
+                                                                                              batch_text_tagses)
                     # TODO limit the batch size of recognition
                     batch_text_labels_sparse = sparse_tuple_from(np.array(batch_text_labels))
 
@@ -194,8 +214,12 @@ def test():
             im = img.copy()
             poly_start_index = len(masks[i-1])
             poly_end_index = len(masks[i-1]) + len(mask)
-            for poly, la,  in zip(polygons[prev_start_index:(prev_start_index+len(mask))], labels[prev_start_index:prev_start_index+len(mask)]):
-                cv2.polylines(img, [poly.astype(np.int32).reshape((-1, 1, 2))], True, color=(255, 255, 0), thickness=1)
+            for poly, la in zip(polygons[prev_start_index:(prev_start_index+len(mask))], labels[prev_start_index:prev_start_index+len(mask)]):
+                cv2.polylines(img,
+                              [poly.astype(np.int32).reshape((-1, 1, 2))],
+                              True,
+                              color=(255, 255, 0),
+                              thickness=1)
                 # trans = ground_truth_to_word(la)
                 # img_name = img_name + trans + '_'
             img_name = img_name[:-1] + '.jpg'
