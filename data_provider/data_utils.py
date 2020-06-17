@@ -15,10 +15,12 @@ try:
 except ImportError:
     import Queue as queue
 
+
 def norm2(x, axis=None):
-	if axis:
-		return np.sqrt(np.sum(x ** 2, axis=axis))
-	return np.sqrt(np.sum(x ** 2)) 
+    if axis:
+        return np.sqrt(np.sum(x ** 2, axis=axis))
+    return np.sqrt(np.sum(x ** 2))
+
 
 def label_to_array(label):
     try:
@@ -27,6 +29,8 @@ def label_to_array(label):
     except Exception as ex:
         print(label)
         raise ex
+
+
 def ground_truth_to_word(ground_truth):
     """
         Return the word string based on the input ground_truth
@@ -38,6 +42,7 @@ def ground_truth_to_word(ground_truth):
         print(ground_truth)
         print(ex)
         input()
+
 
 def sparse_tuple_from(sequences, dtype=np.int32):
     """
@@ -57,6 +62,7 @@ def sparse_tuple_from(sequences, dtype=np.int32):
 
     return indices, values, shape
 
+
 def polygon_area(poly):
     '''
     compute area of a polygon
@@ -71,22 +77,23 @@ def polygon_area(poly):
     ]
     return np.sum(edge)/2.
 
+
 def check_is_horizon(poly):
-	"""
-	Since FOTS can not deal with vertical text area
-	so we check it
-	"""
-	edge1 = norm2(poly[0] - poly[1])
-	edge2 = norm2(poly[1] - poly[2])
-	edge3 = norm2(poly[2] - poly[3])
-	edge4 = norm2(poly[3] - poly[0])
+    """
+    Since FOTS can not deal with vertical text area
+    so we check it
+    """
+    edge1 = norm2(poly[0] - poly[1])
+    edge2 = norm2(poly[1] - poly[2])
+    edge3 = norm2(poly[2] - poly[3])
+    edge4 = norm2(poly[3] - poly[0])
 
-	if (4.0 * (edge1 + edge3) / 2.0) < ((edge2 + edge4) / 2.0):
-		return False
-	else:
-		return True
+    if (4.0 * (edge1 + edge3) / 2.0) < ((edge2 + edge4) / 2.0):
+        return False
+    else:
+        return True
 
-	return True
+    return True
 
 
 def check_and_validate_polys(polys, tags, labels, xxx_todo_changeme):
@@ -98,7 +105,7 @@ def check_and_validate_polys(polys, tags, labels, xxx_todo_changeme):
     :return:
     '''
     (h, w) = xxx_todo_changeme
-    
+
     validated_polys = []
     validated_tags = []
     validated_labels = []
@@ -109,7 +116,6 @@ def check_and_validate_polys(polys, tags, labels, xxx_todo_changeme):
     polys[:, :, 0] = np.clip(polys[:, :, 0], 0, w-1)
     polys[:, :, 1] = np.clip(polys[:, :, 1], 0, h-1)
 
-    
     for poly, tag, label in zip(polys, tags, labels):
         p_area = polygon_area(poly)
         if abs(p_area) < 1:
@@ -128,6 +134,7 @@ def check_and_validate_polys(polys, tags, labels, xxx_todo_changeme):
         validated_labels.append(label)
 
     return np.array(validated_polys), np.array(validated_tags), validated_labels
+
 
 def crop_area_fix(im, polys, tags, max_tries=50, crop_size=(600, 600)):
     h, w, _ = im.shape
@@ -179,6 +186,7 @@ def crop_area_fix(im, polys, tags, max_tries=50, crop_size=(600, 600)):
         return im, polys, tags, selected_polys
 
     return im, polys, tags, np.array(range(len(polys)))
+
 
 def crop_area(im, polys, tags, crop_background = False, max_tries = 50):
     '''
@@ -245,6 +253,7 @@ def crop_area(im, polys, tags, crop_background = False, max_tries = 50):
 
     return im, polys, tags, np.array(range(len(polys)))
 
+
 def rotate_image(img, boxes, angle, scale=1):
     H, W, _ = img.shape
     rangle = np.deg2rad(angle)  # angle in radians
@@ -267,6 +276,8 @@ def rotate_image(img, boxes, angle, scale=1):
         rot_bboxes.append(new_box)
         # point1 = np.dot(rot_mat, np.array([(xmin + xmax) / 2, ymin, 1]))
     return rot_img, np.array(rot_bboxes)
+
+
 def shrink_poly(poly, r):
     '''
     fit a poly inside the origin poly, maybe bugs here...
@@ -331,6 +342,7 @@ def shrink_poly(poly, r):
         poly[3][1] += R * r[3] * np.sin(theta)
         poly[2][0] -= R * r[2] * np.cos(theta)
         poly[2][1] -= R * r[2] * np.sin(theta)
+
     return poly
 
 
@@ -345,6 +357,7 @@ def fit_line(p1, p2):
         return [1., 0., -p1[0]]
     else:
         [k, b] = np.polyfit(p1, p2, deg=1)
+
         return [k, -1., b]
 
 
@@ -367,6 +380,7 @@ def line_cross_point(line1, line2):
         k2, _, b2 = line2
         x = -(b1-b2)/(k1-k2)
         y = k1*x + b1
+
     return np.array([x, y], dtype=np.float32)
 
 
@@ -379,6 +393,7 @@ def line_verticle(line, point):
             verticle = [1, 0, -point[0]]
         else:
             verticle = [-1./line[0], -1, point[1] - (-1/line[0] * point[0])]
+
     return verticle
 
 
@@ -403,6 +418,7 @@ def rectangle_from_parallelogram(poly):
             p0p1_verticle = line_verticle(p0p1, p2)
 
             new_p1 = line_cross_point(p0p1, p0p1_verticle)
+
             return np.array([p0, new_p1, p2, new_p3], dtype=np.float32)
         else:
             p1p2 = fit_line([p1[0], p2[0]], [p1[1], p2[1]])
@@ -413,6 +429,7 @@ def rectangle_from_parallelogram(poly):
             p0p3_verticle = line_verticle(p0p3, p2)
 
             new_p3 = line_cross_point(p0p3, p0p3_verticle)
+
             return np.array([p0, new_p1, p2, new_p3], dtype=np.float32)
     else:
         if np.linalg.norm(p0-p1) > np.linalg.norm(p0-p3):
@@ -427,6 +444,7 @@ def rectangle_from_parallelogram(poly):
             p0p1_verticle = line_verticle(p0p1, p3)
 
             new_p0 = line_cross_point(p0p1, p0p1_verticle)
+
             return np.array([new_p0, p1, new_p2, p3], dtype=np.float32)
         else:
             p0p3 = fit_line([p0[0], p3[0]], [p0[1], p3[1]])
@@ -437,6 +455,7 @@ def rectangle_from_parallelogram(poly):
             p1p2_verticle = line_verticle(p1p2, p3)
 
             new_p2 = line_cross_point(p1p2, p1p2_verticle)
+
             return np.array([new_p0, p1, new_p2, p3], dtype=np.float32)
 
 
@@ -472,6 +491,7 @@ def sort_rectangle(poly):
             p0_index = (p3_index + 1) % 4
             p1_index = (p3_index + 2) % 4
             p2_index = (p3_index + 3) % 4
+
             return poly[[p0_index, p1_index, p2_index, p3_index]], angle
 
 
@@ -544,6 +564,7 @@ def restore_rectangle_rbox(origin, geometry):
                                   new_p2[:, np.newaxis, :], new_p3[:, np.newaxis, :]], axis=1)  # N*4*2
     else:
         new_p_1 = np.zeros((0, 4, 2))
+
     return np.concatenate([new_p_0, new_p_1])
 
 
@@ -669,7 +690,9 @@ def generate_rbox(im_size, polys, tags):
             geo_map[y, x, 3] = point_dist_to_line(p3_rect, p0_rect, point)
             # angle
             geo_map[y, x, 4] = rotate_angle
+
     return score_map, geo_map, training_mask, rectangles
+
 
 def get_project_matrix_and_width(text_polyses, text_tags, target_height=8.0):
     project_matrixes = []
@@ -692,10 +715,14 @@ def get_project_matrix_and_width(text_polyses, text_tags, target_height=8.0):
         width_box = int(min(width_box, 128)) # not to exceed feature map's width
         mapped_x2, mapped_y2 = (width_box, 0)
         src_pts = np.float32([(x1, y1), (x2, y2), (x4, y4)])
-        dst_pts = np.float32([(mapped_x1, mapped_y1), (mapped_x2, mapped_y2), (mapped_x4, mapped_y4)])
-        # project_matrix = cv2.getPerspectiveTransform(dst_pts.astype(np.float32), src_pts.astype(np.float32))
+        dst_pts = np.float32([(mapped_x1, mapped_y1),
+                              (mapped_x2, mapped_y2),
+                              (mapped_x4, mapped_y4)])
+        # project_matrix = cv2.getPerspectiveTransform(dst_pts.astype(np.float32),
+        #                                               src_pts.astype(np.float32))
         # project_matrix = project_matrix.flatten()[:8]
-        affine_matrix = cv2.getAffineTransform(dst_pts.astype(np.float32), src_pts.astype(np.float32))
+        affine_matrix = cv2.getAffineTransform(dst_pts.astype(np.float32),
+                                               src_pts.astype(np.float32))
         affine_matrix = affine_matrix.flatten()
         project_matrixes.append(affine_matrix)
         box_widths.append(width_box)

@@ -12,6 +12,7 @@ tf.app.flags.DEFINE_string('year',
 
 FLAGS = tf.app.flags.FLAGS
 
+
 def change_file_names(imgs_dir, gts_dir, is_train):
     dirs = [imgs_dir, gts_dir]
     for dir in dirs:
@@ -36,6 +37,7 @@ def change_file_names(imgs_dir, gts_dir, is_train):
             new_path = os.path.join(dir_name, fname)
             os.rename(fpath, new_path)
 
+
 def change_delimiter(fpath, deli):
     with open(fpath, 'r') as fr:
         txt = fr.read()
@@ -47,23 +49,28 @@ def change_delimiter(fpath, deli):
     with open(fpath, 'w') as fw:
         fw.write(new_txt)
 
+
 def move_files(orig_dir, to_dir):
     check_dir_existence(to_dir)
     cmd = "mv {}/* {}".format(orig_dir, to_dir)
     subprocess.run(cmd, shell=True)
 
+
 def check_dir_existence(path):
     if not os.path.exists(path):
         os.makedirs(path)
+
 
 def return_num_of_files(path):
     files = glob(os.path.join(path, "*"))
     return len(files)
 
+
 def check_num_of_files(paths_1, paths_2):
     files_ct_1 = return_num_of_files(paths_1)
     files_ct_2 = return_num_of_files(paths_2)
     assert files_ct_1 == files_ct_2, "num of imgs are not equal to num of gts"
+
 
 def process(orig_imgs_dir,
             orig_gts_dir,
@@ -88,6 +95,7 @@ def process(orig_imgs_dir,
 
         check_num_of_files(imgs_dir, gts_dir)
         print("final count check of imgs and gts is done")
+
 
 if __name__ == "__main__":
     if FLAGS.year == "13":

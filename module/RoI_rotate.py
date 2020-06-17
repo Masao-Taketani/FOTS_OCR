@@ -126,7 +126,7 @@ class RoIRotate(object):
 
             def cond(pad_rois, i):
                 return i < box_nums
-                
+
             def body(pad_rois, i):
                 _affine_feature_map = trans_feature_map[i]
                 width_box = box_widths[i]
@@ -149,6 +149,7 @@ class RoIRotate(object):
                 i += 1
 
                 return pad_rois, i
+
             pad_rois, _ = tf.while_loop(cond, body, loop_vars=[pad_rois, i])
             pad_rois = pad_rois.stack()
 
@@ -251,6 +252,7 @@ class RoIRotate(object):
             pad_rois = tf.squeeze(pad_rois, axis=1)
             return pad_rois
 
+
 def dummy_input():
 
     folder_path = "../training_samples"
@@ -331,6 +333,7 @@ def dummy_input():
     box_widths = np.array(box_widths)
     return input_imgs, fea_h, fea_w, transform_matrixs, box_masks, box_widths
 
+
 def check_RoIRotate(RR):
     # RR = RoIRotate()
     input_feature_map = tf.placeholder(tf.float32, shape=[None, None, None, 3])
@@ -371,6 +374,7 @@ def check_RoIRotate(RR):
         # output_rois = np.squeeze(output_rois)
         # print(len(transforms))
     return result_rois
+
 
 if __name__ == '__main__':
     RR = RoIRotate()

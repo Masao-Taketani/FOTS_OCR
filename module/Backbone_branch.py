@@ -1,18 +1,18 @@
 import tensorflow as tf
-import numpy as np
-
 from tensorflow.contrib import slim
+from nets import resnet_v1
+import numpy as np
 
 tf.app.flags.DEFINE_integer('text_scale', 512, '')
 
-from nets import resnet_v1
-
 FLAGS = tf.app.flags.FLAGS
+
 
 def unpool(inputs):
     return tf.image.resize_bilinear(inputs,
                                     size=[tf.shape(inputs)[1]*2,
                                     tf.shape(inputs)[2]*2])
+
 
 def mean_image_subtraction(images, means=[123.68, 116.78, 103.94]):
     '''
@@ -28,6 +28,7 @@ def mean_image_subtraction(images, means=[123.68, 116.78, 103.94]):
     for i in range(num_channels):
         channels[i] -= means[i]
     return tf.concat(axis=3, values=channels)
+
 
 class Backbone(object):
     def __init__(self, is_training=True):
@@ -106,7 +107,6 @@ class Backbone(object):
 
         return g[3], F_score, F_geometry
 
-
     def dice_coefficient(self, y_true_cls, y_pred_cls, training_mask):
         '''
         dice loss
@@ -121,8 +121,6 @@ class Backbone(object):
         loss = 1. - (2 * intersection / union)
         tf.summary.scalar('classification_dice_loss', loss)
         return loss
-
-
 
     def loss(self, y_true_cls, y_pred_cls, y_true_geo, y_pred_geo, training_mask):
         '''
