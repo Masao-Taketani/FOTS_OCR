@@ -140,7 +140,18 @@ def generator(input_images_dir,
                     batch_text_labels_sparse = sparse_tuple_from(np.array(batch_text_labels))
 
                     # yield images, image_fns, score_maps, geo_maps, training_masks
-                    yield batch_images, batch_image_fns, batch_score_maps, batch_geo_maps, batch_training_masks, batch_transform_matrixes, batch_boxes_masks, batch_box_widths, batch_text_labels_sparse, batch_text_polyses, batch_text_labels
+                    yield (batch_images,
+                           batch_image_fns,
+                           batch_score_maps,
+                           batch_geo_maps,
+                           batch_training_masks,
+                           batch_transform_matrixes,
+                           batch_boxes_masks,
+                           batch_box_widths,
+                           batch_text_labels_sparse,
+                           batch_text_polyses,
+                           batch_text_labels)
+
                     batch_images = []
                     batch_image_fns = []
                     batch_score_maps = []

@@ -17,7 +17,8 @@ tf.app.flags.DEFINE_integer('save_summary_steps', 100, '')
 tf.app.flags.DEFINE_string('pretrained_model_path', None, '')
 tf.app.flags.DEFINE_integer('train_stage',
                             2,
-                            '0-train detection only; 1-train recognition only; 2-train end-to-end; 3-train end-to-end absolutely')
+                            '0-train detection only; 1-train recognition only; '
+                            '2-train end-to-end; 3-train end-to-end absolutely')
 tf.app.flags.DEFINE_string('training_img_data_dir', default='', help='training images dir')
 tf.app.flags.DEFINE_string('training_gt_data_dir', default='', help='training gts dir')
 tf.app.flags.DEFINE_boolean('icdar',
@@ -111,7 +112,6 @@ def main(argv=None):
                                           name='input_training_masks')
     input_transcription = tf.sparse_placeholder(tf.int32,
                                                 name='input_transcription')
-
     input_transform_matrix = tf.placeholder(tf.float32,
                                             shape=[None, 6],
                                             name='input_transform_matrix')
@@ -138,7 +138,11 @@ def main(argv=None):
                                   [],
                                   initializer=tf.constant_initializer(0),
                                   trainable=False)
-    # learning_rate = tf.train.exponential_decay(FLAGS.learning_rate, global_step, decay_steps=10000, decay_rate=0.94, staircase=True)
+    # learning_rate = tf.train.exponential_decay(FLAGS.learning_rate,
+    #                                            global_step,
+    #                                            decay_steps=10000,
+    #                                            decay_rate=0.94,
+    #                                            staircase=True)
     learning_rate = FLAGS.learning_rate
     # add summary
     tf.summary.scalar('learning_rate', learning_rate)
@@ -152,7 +156,11 @@ def main(argv=None):
                                               input_training_masks,
                                               input_transcription,
                                               input_box_widths)
-    # total_loss = detect_part.loss(input_score_maps, f_score, input_geo_maps, f_geometry, input_training_masks)
+    # total_loss = detect_part.loss(input_score_maps,
+    #                               f_score,
+    #                               input_geo_maps,
+    #                               f_geometry,
+    #                               input_training_masks)
     tf.summary.scalar('total_loss', model_loss)
     total_loss = tf.add_n([model_loss] + tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
     # total_loss = model_loss
@@ -200,6 +208,7 @@ def main(argv=None):
             variable_restore_op = slim.assign_from_checkpoint_fn(FLAGS.pretrained_model_path,
                                                                  slim.get_trainable_variables(),
                                                                  ignore_missing_vars=True)
+
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         if FLAGS.restore:
             print('continue training from previous checkpoint')
@@ -244,13 +253,14 @@ def main(argv=None):
                 avg_time_per_step = (time.time() - start)/10
                 avg_examples_per_second = (10 * FLAGS.batch_size_per_gpu)/(time.time() - start)
                 start = time.time()
-                print('Step {:06d}, detect_loss {:.4f}, recognize_loss {:.4f}, total loss {:.4f}, {:.2f} seconds/step, {:.2f} examples/second'.format(
-                    step,
-                    dl,
-                    rl,
-                    tl,
-                    avg_time_per_step,
-                    avg_examples_per_second))
+                print('Step {:06d}, detect_loss {:.4f}, recognize_loss {:.4f}, '
+                      'total loss {:.4f}, {:.2f} seconds/step, {:.2f} examples/second'
+                      .format(step,
+                              dl,
+                              rl,
+                              tl,
+                              avg_time_per_step,
+                              avg_examples_per_second))
 
                 """
                 print "recognition results: "
@@ -265,10 +275,13 @@ def main(argv=None):
 
             if step % FLAGS.save_summary_steps == 0:
                 """
-                _, tl, summary_str = sess.run([train_op, total_loss, summary_op], feed_dict={input_images: data[0],
-                                                                                             input_score_maps: data[2],
-                                                                                             input_geo_maps: data[3],
-                                                                                             input_training_masks: data[4]})
+                _, tl, summary_str = sess.run([train_op,
+                                               total_loss,
+                                               summary_op],
+                                              feed_dict={input_images: data[0],
+                                              input_score_maps: data[2],
+                                              input_geo_maps: data[3],
+                                              input_training_masks: data[4]})
                 """
                 dl, rl, tl, _, summary_str = sess.run([d_loss,
                                                        r_loss,

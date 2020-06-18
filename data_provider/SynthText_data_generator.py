@@ -59,7 +59,9 @@ def generator(input_images_dir,
                 im = cv2.imread(os.path.join(input_images_dir, im_fn))
                 h, w, _ = im.shape
 
-                ## file_name = "gt_" + im_fn.replace(os.path.basename(im_fn).split('.')[1], 'txt').split('/')[-1]
+                # file_name = "gt_" + im_fn.replace(
+                #                        os.path.basename(im_fn).split('.')[1],
+                #                        'txt').split('/')[-1]
 
                 # using for synthtext
                 file_name = im_fn.replace(im_fn.split('.')[1], 'txt')
@@ -153,14 +155,25 @@ def generator(input_images_dir,
                 if len(batch_images) == batch_size:
                     batch_text_polyses = np.concatenate(batch_text_polyses)
                     batch_text_tagses = np.concatenate(batch_text_tagses)
-                    batch_transform_matrixes, batch_box_widths = get_project_matrix_and_width(batch_text_polyses,
-                                                                                              batch_text_tagses)
+                    batch_transform_matrixes, batch_box_widths = get_project_matrix_and_width(
+                                                                            batch_text_polyses,
+                                                                            batch_text_tagses)
                     # TODO limit the batch size of recognition
                     batch_text_labels_sparse = sparse_tuple_from(np.array(batch_text_labels))
 
                     # yield images, image_fns, score_maps, geo_maps, training_masks
-                    yield batch_images, batch_image_fns, batch_score_maps, batch_geo_maps, batch_training_masks, batch_transform_matrixes, batch_boxes_masks, batch_box_widths, batch_text_labels_sparse, batch_text_polyses, batch_text_labels
-                    batch_images = []
+                    yield (batch_images,
+                           batch_image_fns,
+                           batch_score_maps,
+                           batch_geo_maps,
+                           batch_training_masks,
+                           batch_transform_matrixes,
+                           batch_boxes_masks,
+                           batch_box_widths,
+                           batch_text_labels_sparse,
+                           batch_text_polyses,
+                           batch_text_labels)
+
                     batch_image_fns = []
                     batch_score_maps = []
                     batch_geo_maps = []
@@ -180,7 +193,8 @@ def generator(input_images_dir,
 def get_batch(num_workers, **kwargs):
     try:
         enqueuer = GeneratorEnqueuer(generator(**kwargs), use_multiprocessing=True)
-        print('Generator use 10 batches for buffering, this may take a while, you can tune this yourself.')
+        print('Generator use 10 batches for buffering, this may take a while, '
+              'you can tune this yourself.')
         enqueuer.start(max_queue_size=10, workers=num_workers)
         generator_output = None
         while True:
@@ -214,7 +228,8 @@ def test():
             im = img.copy()
             poly_start_index = len(masks[i-1])
             poly_end_index = len(masks[i-1]) + len(mask)
-            for poly, la in zip(polygons[prev_start_index:(prev_start_index+len(mask))], labels[prev_start_index:prev_start_index+len(mask)]):
+            for poly, la in zip(polygons[prev_start_index: (prev_start_index+len(mask))],
+                                labels[prev_start_index: prev_start_index+len(mask)]):
                 cv2.polylines(img,
                               [poly.astype(np.int32).reshape((-1, 1, 2))],
                               True,
