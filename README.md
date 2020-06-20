@@ -46,7 +46,7 @@ wget http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz
 tar -zxvf resnet_v1_50_2016_08_28.tar.gz
 rm resnet_v1_50_2016_08_28.tar.gz
 ```
-2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) and place it at 'data/SynthText/' dir to pre-train the whole net.<br>
+2. Download [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) and place it at `data/SynthText/` dir to pre-train the whole net.<br>
 
 3. Transform(Pre-process) the SynthText data into the ICDAR data format.<br>
 ```
@@ -70,8 +70,10 @@ tensorboard --logdir=ckpt/synthText_10eps/
 ```
 
 ### Finetune with ICDAR 2015, ICDAR 2017 MLT or ICDAR 2013
+(if you are using [the pre-trained model](https://drive.google.com/drive/folders/1g5pneiBzmsU4Xw6mnAajF8HHK9L1ho_c?usp=sharing), place all of the files in `ckpt/synthText_10eps/`)
+
 - Combine ICDAR data before training.
-  1. Place ICDAR data under `tmp` foler.
+  1. Place ICDAR data under `tmp/` foler.
   2. Run the following script to combine the data.
   ```
   python combine_ICDAR_data.py --year [year of ICDAR to train(13 or 15 or 17)]
@@ -112,7 +114,7 @@ tensorboard --logdir=ckpt/synthText_10eps/
   ```
 
 ## Test
-Place some images in `test_imgs` dir and specify a trained checkpoint path to see the test result.
+Place some images in `test_imgs/` dir and specify a trained checkpoint path to see the test result.
 ```
 python test.py --test_data_path test_imgs/ --checkpoint_path [checkpoint path]
 ```
