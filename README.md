@@ -29,8 +29,8 @@ As for now, the pre-training code is tested on TensorFlow 1.12, 1.14 and 1.15. I
 GCC >= 6
 
 ## Trained Models
-  **Coming Soon!**
-
+  - [tmp pre-trained model](https://drive.google.com/drive/folders/1g5pneiBzmsU4Xw6mnAajF8HHK9L1ho_c?usp=sharing)
+  - trained model **comming soon**
 ## Datasets
 - pre-training<br>
 [Synth800k](https://www.robots.ox.ac.uk/~vgg/data/scenetext/)(The dataset is only available for non-commercial research and educational purposes)
@@ -76,7 +76,7 @@ tensorboard --logdir=ckpt/synthText_10eps/
   ```
   python combine_ICDAR_data.py --year [year of ICDAR to train(13 or 15 or 17)]
   ```
-  
+
 - ICDAR 2017 MLT/pre-finetune for ICDAR 2013 or ICDAR 2015 (text detection task only)
   - Train the pre-trained model with 9,000 images from ICDAR 2017 MLT training and validation datasets(with 1 GPU).
   ```
@@ -116,10 +116,6 @@ Place some images in `test_imgs` dir and specify a trained checkpoint path to se
 ```
 python test.py --test_data_path test_imgs/ --checkpoint_path [checkpoint path]
 ```
-
-~~1. Download a [pre-trained model](https://github.com/Pay20Y/FOTS_TF/releases/download/v2/SynthText_6_epochs.tar) with [Synth800k dataset](https://www.robots.ox.ac.uk/~vgg/data/scenetext/) which can be originally found at [Pay20Y/FOTS_TF](https://github.com/Pay20Y/FOTS_TF/tree/dev).
-2.~~
-
 
 ## References
 - Paper
