@@ -18,7 +18,7 @@ tf.app.flags.DEFINE_string('pretrained_model_path', None, '')
 tf.app.flags.DEFINE_integer('train_stage',
                             2,
                             '0-train detection only; 1-train recognition only; '
-                            '2-train end-to-end; 3-train end-to-end absolutely')
+                            '2-train end-to-end;')
 tf.app.flags.DEFINE_string('training_img_data_dir', default='', help='training images dir')
 tf.app.flags.DEFINE_string('training_gt_data_dir', default='', help='training gts dir')
 tf.app.flags.DEFINE_boolean('icdar',
@@ -116,13 +116,12 @@ def main(argv=None):
                                             shape=[None, 6],
                                             name='input_transform_matrix')
     input_transform_matrix = tf.stop_gradient(input_transform_matrix)
-    input_box_masks = []
-
     input_box_widths = tf.placeholder(tf.int32,
                                       shape=[None],
                                       name='input_box_widths')
     input_seq_len = input_box_widths[tf.argmax(input_box_widths, 0)] * tf.ones_like(input_box_widths)
 
+    input_box_masks = []
     for i in range(FLAGS.batch_size_per_gpu):
         input_box_masks.append(tf.placeholder(tf.int32,
                                               shape=[None],
@@ -286,7 +285,8 @@ def main(argv=None):
                 dl, rl, tl, _, summary_str = sess.run([d_loss,
                                                        r_loss,
                                                        total_loss,
-                                                       train_op, summary_op],
+                                                       train_op, 
+                                                       summary_op],
                                                       feed_dict=inp_dict)
 
                 summary_writer.add_summary(summary_str, global_step=step)
