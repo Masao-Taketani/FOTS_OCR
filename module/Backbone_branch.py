@@ -24,6 +24,14 @@ def mean_image_subtraction(images, means=[123.68, 116.78, 103.94]):
     num_channels = images.get_shape().as_list()[-1]
     if len(means) != num_channels:
       raise ValueError('len(means) must match the number of channels')
+    """
+    'value' is a tensor with shape [5, 30]
+    Split 'value' into 3 tensors along dimension 1
+    split0, split1, split2 = tf.split(value, num_or_size_splits=3, axis=1)
+    tf.shape(split0)  # [5, 10]
+    tf.shape(split1)  # [5, 10]
+    tf.shape(split2)  # [5, 10]
+    """
     channels = tf.split(axis=3, num_or_size_splits=num_channels, value=images)
     for i in range(num_channels):
         channels[i] -= means[i]
