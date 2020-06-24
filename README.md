@@ -121,8 +121,9 @@ python test.py --test_data_path test_imgs/ --checkpoint_path [checkpoint path]
 
 ## References
 - Paper
-  - [FOTS: Fast Oriented Text Spotting with a Unified Network](https://arxiv.org/pdf/1801.01671.pdf)<br>
-  - [Feature Pyramid Networks for Object Detection](https://arxiv.org/pdf/1612.03144.pdf)<br>
+  - [FOTS: Fast Oriented Text Spotting with a Unified Network](https://arxiv.org/abs/1801.01671)<br>
+  - [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)<br>
+  - [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)<br>
 - Repos
   - https://github.com/yu20103983/FOTS<br>
   - https://github.com/Pay20Y/FOTS_TF/tree/dev<br>
