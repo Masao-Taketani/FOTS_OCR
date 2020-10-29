@@ -60,7 +60,7 @@ def compute_loss(f_score,
                  input_training_masks,
                  input_transcription,
                  input_box_widths,
-                 lamda=1.0):
+                 lambda=0.01):
 
     detection_loss = detect_part.loss(input_score_maps,
                                       f_score,
@@ -75,7 +75,7 @@ def compute_loss(f_score,
     tf.summary.scalar('recognize_loss', recognition_loss)
 
     if FLAGS.train_stage == 2:
-        model_loss = detection_loss + lamda * recognition_loss
+        model_loss = detection_loss + lambda * recognition_loss
     elif FLAGS.train_stage == 0:
         model_loss = detection_loss
     elif FLAGS.train_stage == 1:
@@ -285,7 +285,7 @@ def main(argv=None):
                 dl, rl, tl, _, summary_str = sess.run([d_loss,
                                                        r_loss,
                                                        total_loss,
-                                                       train_op, 
+                                                       train_op,
                                                        summary_op],
                                                       feed_dict=inp_dict)
 
